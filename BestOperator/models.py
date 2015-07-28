@@ -1,64 +1,63 @@
 __author__ = 'Kostiantyn Bezverkhyi'
 
-
 from django.db import models
 
-class Operators(models.Model):
+class Operator(models.Model):
     # Type of fields will be updated after additional learning of types
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
 
-class Offers(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+class Offer(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
     price = models.DecimalField(max_digits=7,decimal_places=2,default=0)
 
-class Packages(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+class Package(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
     price = models.DecimalField(max_digits=7,decimal_places=2,default=0)
-    operator_id = models.ForeignKey(Operators)
-    offer_id = models.ManyToManyField(Offers)
+    operator_id = models.ForeignKey(Operator)
+    offer_id = models.ManyToManyField(Offer)
 
-class Locations(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+class Location(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
     isprimary = models.IntegerField(default = 0)
-    included_in = models.ForeignKey('self', null=True)
+    included_in = models.ForeignKey('self', null=True, blank = True)
 
-class ServiceTypes(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+class ServiceType(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
     isprimary = models.IntegerField(default = 0)
 
-class Directions(models.Model):
-    from_location_id = models.ForeignKey(Locations, related_name="from_location_id")
-    to_location_id = models.ForeignKey(Locations, related_name="to_location_id")
+class Direction(models.Model):
+    from_location_id = models.ForeignKey(Location, related_name="from_location_id")
+    to_location_id = models.ForeignKey(Location, related_name="to_location_id", blank = True)
 
-class Services(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
-    service_type_id = models.ForeignKey(ServiceTypes, null=False)
-    direction_id = models.ForeignKey(Directions, null=False)
+class Service(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
+    service_type_id = models.ForeignKey(ServiceType)
+    direction_id = models.ForeignKey(Direction)
 
-class Features(models.Model):
-    offer_id = models.ForeignKey(Offers)
-    package_id = models.ForeignKey(Packages)
-    operator_id = models.ForeignKey(Operators)
-    service_id = models.ForeignKey(Services, null=False)
+class Feature(models.Model):
+    offer_id = models.ForeignKey(Offer)
+    package_id = models.ForeignKey(Package)
+    operator_id = models.ForeignKey(Operator)
+    service_id = models.ForeignKey(Service)
     price = models.DecimalField(max_digits=7,decimal_places=2,default=0)
-    period = models.IntegerField()
-    num_of_min = models.IntegerField()
-    num_of_mess = models.IntegerField()
-    topBand = models.IntegerField()
-    traffic = models.IntegerField()
+    period = models.IntegerField(blank = True)
+    num_of_min = models.IntegerField(blank = True)
+    num_of_mess = models.IntegerField(blank = True)
+    topBand = models.IntegerField(blank = True)
+    traffic = models.IntegerField(blank = True)
 
-class Attributes(models.Model):
-    service_type_id = models.ForeignKey(ServiceTypes, null=False)
-    name = models.CharField(max_length=30, null=False)
-    description = models.TextField(max_length=100)
+class Attribute(models.Model):
+    service_type_id = models.ForeignKey(ServiceType)
+    name = models.CharField(max_length=30)
+    description = models.TextField(max_length=100, blank = True)
 
-class Params(models.Model):
-    attr_id = models.ForeignKey(Attributes, null=False)
-    value = models.TextField
-    feature_id = models.ForeignKey(Features,null=False)
+class Param(models.Model):
+    attr_id = models.ForeignKey(Attribute)
+    value = models.TextField(blank = True)
+    feature_id = models.ForeignKey(Feature)
