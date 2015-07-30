@@ -5,11 +5,11 @@ from django.contrib import admin
 from .models import *
 
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('name','description','isprimary','included_in')
+    list_display = ('name','description','is_primary','included_in')
 admin.site.register(Location,LocationAdmin)
 
 class ServiceTypeAdmin(admin.ModelAdmin):
-    list_display = ('name','description','isprimary')
+    list_display = ('name','description','is_primary')
 admin.site.register(ServiceType,ServiceTypeAdmin)
 
 # todo-me: create customized representations of Services and Directions

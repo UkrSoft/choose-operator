@@ -28,7 +28,7 @@ class Package(models.Model):
 class Location(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank = True)
-    isprimary = models.IntegerField(default = 0)
+    is_primary = models.IntegerField(default = 0)
     included_in = models.ForeignKey('self', null=True, blank = True)
     def __str__(self):
         return self.name
@@ -36,7 +36,7 @@ class Location(models.Model):
 class ServiceType(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank = True)
-    isprimary = models.IntegerField(default = 0)
+    is_primary = models.IntegerField(default = 0)
     def __str__(self):
         return self.name
 
