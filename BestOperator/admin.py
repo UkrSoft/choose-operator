@@ -29,8 +29,13 @@ admin.site.register(Service, ServicesAdmin)
 #admin.site.register(Services)
 admin.site.register(Direction)
 
-admin.site.register(Operator)
-admin.site.register(Package)
+class OperatorAdmin(admin.ModelAdmin):
+    list_display = ('name','description')
+admin.site.register(Operator, OperatorAdmin)
+
+class PackageAdmin(admin.ModelAdmin):
+    list_display = ('name','description', 'price', 'operator_id')
+admin.site.register(Package, PackageAdmin)
 
 # todo-me: create customized representations of Offers-Features and Features-Params
 admin.site.register(Feature)
