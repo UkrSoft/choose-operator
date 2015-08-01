@@ -3,24 +3,26 @@ __author__ = 'Kostiantyn Bezverkhyi'
 from django.db import models
 
 class Operator(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(primary_key=True, max_length=200)
     description = models.TextField(blank = True)
-    def __str__(self):
-        return self.name
-
-class Offer(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank = True)
-    price = models.DecimalField("Initial price", max_digits=7,decimal_places=2,default=0)
     def __str__(self):
         return self.name
 
 class Package(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank = True)
-    price = models.DecimalField("Initial price", max_digits=7,decimal_places=2,default=0)
+    price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0)
     operator_id = models.ForeignKey(Operator, related_name='packages', verbose_name="Operator")
-    offer_id = models.ManyToManyField(Offer, verbose_name="Offer")
+    def __str__(self):
+        return self.name
+    class Meta:
+        unique_together = (("name", "operator_id"),)
+
+class Offer(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank = True)
+    price = models.DecimalField("Initial price", max_digits=7,decimal_places=2,default=0)
+    package_id = models.ManyToManyField(Package, verbose_name="Package")
     def __str__(self):
         return self.name
 
@@ -28,13 +30,14 @@ class Location(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank = True)
     is_primary = models.IntegerField("Is location Primary?", default = 0)
-    #todo-me: try to use verbose field for Foreign Field attribute
     included_in = models.ForeignKey('self', null=True, blank = True, verbose_name="Included in Location")
     def __str__(self):
         return self.name
+    class Meta:
+        unique_together = (("name","included_in"),)
 
 class ServiceType(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(primary_key=True, max_length=200)
     description = models.TextField(blank = True)
     is_primary = models.IntegerField("Is service type Primary", default = 0)
     def __str__(self):
@@ -44,7 +47,9 @@ class Direction(models.Model):
     from_location_id = models.ForeignKey(Location, related_name="from_location_id", verbose_name="From Location")
     to_location_id = models.ForeignKey(Location, related_name="to_location_id", blank = True, verbose_name="To Location")
     def __str__(self):
-        return '%s - %s' % (self.from_location_id, self.to_location_id)
+        return '%s -> %s' % (self.from_location_id, self.to_location_id)
+    class Meta:
+        unique_together = (("from_location_id","to_location_id"),)
 
 class Service(models.Model):
     name = models.CharField(max_length=200)
@@ -53,6 +58,8 @@ class Service(models.Model):
     direction_id = models.ForeignKey(Direction, verbose_name="Direction")
     def __str__(self):
         return self.name
+    class Meta:
+        unique_together = (("service_type_id", "direction_id"),)
 
 class Feature(models.Model):
     offer_id = models.ForeignKey(Offer, verbose_name="Offer", null = True)
@@ -67,6 +74,8 @@ class Feature(models.Model):
     traffic = models.IntegerField("Number of megabytes",blank = True, null = True)
     def __str__(self):
         return '%s - %s' % (self.offer_id, self.service_id)
+    class Meta:
+        unique_together = (("offer_id","service_id"),)
 
 class Attribute(models.Model):
     service_type_id = models.ForeignKey(ServiceType, verbose_name="Service Type")
@@ -74,6 +83,8 @@ class Attribute(models.Model):
     description = models.TextField(blank = True)
     def __str__(self):
         return self.name
+    class Meta:
+        unique_together = (("service_type_id","name"),)
 
 class Param(models.Model):
     attr_id = models.ForeignKey(Attribute, verbose_name="Attribute")
@@ -81,3 +92,5 @@ class Param(models.Model):
     feature_id = models.ForeignKey(Feature, verbose_name="Feature")
     def __str__(self):
         return self.attr_id
+    class Meta:
+        unique_together = (("attr_id","feature_id"),)
