@@ -82,7 +82,7 @@ class LocationType(CommonInfo):
     pass
 
 class Location(CommonInfo):
-    included_in = models.ForeignKey('self', null=True, blank = True, verbose_name="Included in Location")
+    included_in = models.ManyToManyField('self', null=True, blank = True, verbose_name="Included in Location")
     location_type_id = models.ForeignKey('LocationType', verbose_name="Location Type")
     class Meta:
         unique_together = (("name"  ,"included_in"),)
