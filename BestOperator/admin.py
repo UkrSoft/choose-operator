@@ -4,13 +4,25 @@ from django.contrib import admin
 
 from .models import *
 
+# class OfferInline(admin.TabularInline):
+#     model = Offer
+#     fk_name = 'package_id'
+#     # raw_id_fields = ('emp_id', 'manager_id')
+#     fieldsets = [(None, {'fields': ['payment_id', 'package_id', 'po_term_id', 'link']}),]
+#     extra = 0
+
+class PackageInline(admin.TabularInline):
+    model = Package
+    fk_name = 'package_id'
+    # raw_id_fields = ('emp_id', 'manager_id')
+    fieldsets = [(None, {'fields': ['name', 'package_type_id', 'price', 'link']}),]
+    extra = 0
+
 class LocationAdmin(admin.ModelAdmin):
     list_display = ('name','description','included_in')
-admin.site.register(Location,LocationAdmin)
 
 class ServiceTypeAdmin(admin.ModelAdmin):
     list_display = ('name','description')
-admin.site.register(ServiceType,ServiceTypeAdmin)
 
 # todo-me: create customized representations of Services and Directions
 class DirectionsInline(admin.TabularInline):
@@ -24,21 +36,31 @@ class ServicesAdmin(admin.ModelAdmin):
     inline = [DirectionsInline]
     list_display = ('name', 'description','service_type_id','direction_id')
 
-admin.site.register(Service, ServicesAdmin)
-
 #admin.site.register(Services)
-admin.site.register(Direction)
-
 class OperatorAdmin(admin.ModelAdmin):
     list_display = ('name','description')
-admin.site.register(Operator, OperatorAdmin)
+    inline = [PackageInline]
 
 class PackageAdmin(admin.ModelAdmin):
     list_display = ('name','description', 'price', 'operator_id')
-admin.site.register(Package, PackageAdmin)
+    # inlines = [OfferInline]
 
 # todo-me: create customized representations of Offers-Features and Features-Params
+admin.site.register(Direction)
+admin.site.register(ServiceType,ServiceTypeAdmin)
+admin.site.register(Location,LocationAdmin)
+admin.site.register(Package, PackageAdmin)
+admin.site.register(Service, ServicesAdmin)
+admin.site.register(Operator, OperatorAdmin)
 admin.site.register(Feature)
 admin.site.register(Offer)
 admin.site.register(Param)
 admin.site.register(Attribute)
+admin.site.register(Payment)
+admin.site.register(Period)
+admin.site.register(POTerm)
+admin.site.register(Criterion)
+admin.site.register(TermOfUsage)
+admin.site.register(LocationType)
+admin.site.register(PackageType)
+

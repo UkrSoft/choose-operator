@@ -20,13 +20,15 @@ class Code(models.Model):
 
 class Operator(CommonInfo):
     #todo-me: name field should be unique for operator
+    location_id = models.ForeignKey('Location',verbose_name="Location")
+    link = models.TextField(blank=True)
     pass
 
 class Package(CommonInfo):
     price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0)
     operator_id = models.ForeignKey(Operator, related_name='packages', verbose_name="Operator")
     package_type_id = models.ForeignKey('PackageType', verbose_name= 'Package Type')
-    po_term_id = models.ForeignKey('POTerm', verbose_name='Package/Offer Term')
+    po_term_id = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null = True)
     link = models.TextField(blank=True)
     class Meta:
         unique_together = (("name", "operator_id"),)
@@ -41,10 +43,10 @@ class Offer(CommonInfo):
     link = models.TextField(blank=True)
 
 class POTerm(models.Model):
-    active_from_date = models.DateTimeField()
-    active_to_date = models.DateTimeField()
-    order_from_date = models.DateTimeField()
-    order_to_date = models.DateTimeField()
+    active_from_date = models.DateTimeField(blank=True)
+    active_to_date = models.DateTimeField(blank=True)
+    order_from_date = models.DateTimeField(blank=True)
+    order_to_date = models.DateTimeField(blank=True)
     is_active = models.IntegerField(default=1)
     def __str__(self):
         return 'Active from->to: %s -> %s' % (self.active_from_date, self.active_to_date)
@@ -53,8 +55,8 @@ class Period(CommonInfo):
     #todo-me: chech variant with using DurationField type for remresenting period in days
     num_of_days = models.IntegerField("Number of days for period")
     #fields from_time and to_time represent information about period of time, when this offer or feature are working. For example: internet only during night hours
-    from_time = models.DateTimeField(null=True)
-    to_time = models.DateTimeField(null=True)
+    from_time = models.DateTimeField(blank=True)
+    to_time = models.DateTimeField(blank=True)
 
 class Payment(models.Model):
     price = models.IntegerField()
@@ -82,10 +84,10 @@ class LocationType(CommonInfo):
     pass
 
 class Location(CommonInfo):
-    included_in = models.ManyToManyField('self', null=True, blank = True, verbose_name="Included in Location")
+    included_in = models.ForeignKey('self', null=True, blank = True, verbose_name="Included in Location")
     location_type_id = models.ForeignKey('LocationType', verbose_name="Location Type")
     class Meta:
-        unique_together = (("name"  ,"included_in"),)
+       unique_together = (("name"  ,"included_in"),)
 
 class ServiceType(CommonInfo):
     #todo-me: name field should be unique for operator
