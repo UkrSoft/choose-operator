@@ -18,23 +18,31 @@
     <![endif]-->
 </head>
 <body>
-    <h1>{{ now }}</h1>
-    <!-- Split button -->
-    <div class="btn-group">
-      <button type="button" class="btn btn-danger">Action</button>
-      <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="#">Action</a></li>
-        <li><a href="#">Another action</a></li>
-        <li><a href="#">Something else here</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="#">Separated link</a></li>
-      </ul>
-    </div>
-
+    <h1>Current time {{ now }}</h1>
+	<form id='store_data' method='POST' action='/index/results/'>
+		{% csrf_token %}
+		<div class="alert alert-danger" role="alert">
+		  <span class="glyphicon glyphicon glyphicon-signal" aria-hidden="true"></span>
+		  <span class="sr-only">Оператори</span>
+		  Будь-ласка, виберіть операторів, яким надаєте перевагу:
+		</div>
+		<!-- Split button -->
+		<div class="btn-group">
+		  <button type="button" class="btn btn-danger">Action</button>
+		  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<span class="caret"></span>
+			<span class="sr-only">Toggle Dropdown</span>
+		  </button>
+		  <ul class="dropdown-menu">
+			<li><a href="#">Action</a></li>
+			<li><a href="#">Another action</a></li>
+			<li><a href="#">Something else here</a></li>
+			<li role="separator" class="divider"></li>
+			<li><a href="#">Separated link</a></li>
+		  </ul>
+		</div>
+		<input type='submit' value='Вперед!'/>
+	</form>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->

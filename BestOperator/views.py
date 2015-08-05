@@ -1,5 +1,10 @@
 import datetime
 from django.views.generic import TemplateView
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
+from BestOperator.models import Operator, Feature
+
 
 class MainView(TemplateView):
     template_name = "index.html"
@@ -8,6 +13,7 @@ class MainView(TemplateView):
         # Call the base implementation first to get a context
         context = super(MainView, self).get_context_data(**kwargs)
         context['now'] = datetime.datetime.now()
+
         # Sequence of operations (app logic):
         # 1) get input:
         #   get source operator preferences: mts, kyivstar, life; - percentage; sum of the criteria values should be 100%
@@ -33,3 +39,23 @@ class MainView(TemplateView):
         #   table headers will be transposed to row names (this will be the feature names) in the resulting page
         #   each table row will be transposed to separate column with 1 package in it
         return context
+
+def get_results(request):
+    try:
+        prefOperatorsObjects = Operator.objects.filter(pk=request.POST['pref_operators'])
+        callOperatorsObjects =  Operator.objects.filter(pk=request.POST['call_operators'])
+        preferredFeatures = Feature.objects.filter(pk=request.POST['pref_features'])
+        money_limit = request.POST['money_limit']
+    except (KeyError, Operator.DoesNotExist):#fix this
+        # Redisplay the question voting form.
+        return render(request, 'index.html', {
+            'error_message': "Ви не зробили свій вибір.",
+        })
+    else:
+        # selected_choice.votes += 1
+        # selected_choice.save()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+        # return HttpResponseRedirect(reverse('polls:results'))
+        return render(request, 'index.html')
