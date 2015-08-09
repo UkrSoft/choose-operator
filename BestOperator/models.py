@@ -94,7 +94,7 @@ class Location(CommonInfo):
 
 class ServiceType(CommonInfo):
     pass
-    # is_displayed = models.BooleanField(default=False);
+    is_displayed = models.BooleanField(default=False);
     #todo-me: name field should be unique for operator
     # def save(self, *args, **kwargs):#TODO you may try overriding this method
     #         if self.name == "Yoko Ono's blog":

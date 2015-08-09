@@ -6,13 +6,13 @@ from BestOperator.models import Operator, Feature, ServiceType
 
 
 class MainView(TemplateView):
-    template_name = "index.html"
+    template_name = "index.html"#TODO add templates caching
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(MainView, self).get_context_data(**kwargs)
         context['operators'] = Operator.objects.all();
-        context['serviceTypes'] = ServiceType.objects.filter();#TODO need to specify which feature to show on form - filter by field is_displayed
+        context['serviceTypes'] = ServiceType.objects.filter(is_displayed=True);
         # Sequence of operations (app logic):
         # 1) get input:
         #   get source operator preferences: mts, kyivstar, life; - percentage; sum of the criteria values should be 100%
