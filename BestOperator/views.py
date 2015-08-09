@@ -6,7 +6,7 @@ from BestOperator.models import Operator, Feature, ServiceType
 
 
 class MainView(TemplateView):
-    template_name = "index.html"
+    template_name = "index.html"#TODO add templates caching
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
