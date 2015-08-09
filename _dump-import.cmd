@@ -27,7 +27,7 @@ echo OK.
 )
 
 echo Importing dump file into database...
-mysql -u%username% -p%pass% --database %db_name%<"%full_dump_path%"
+mysql -u%username% -p%pass% %db_name%<"%full_dump_path%"
 if errorlevel 1 (
 goto :exit_label
 ) else (
