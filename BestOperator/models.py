@@ -14,7 +14,7 @@ class CommonInfo(models.Model):
 
 class Code(models.Model):
     operator_code = models.CharField(max_length=10, help_text="Operator code - several first numbers of phone number for some specific operator")
-    operator_id = models.ForeignKey('Operator', related_name = 'code', help_text="Reference to operator which use current code.")
+    operator_id = models.ForeignKey('Operator', related_name = 'code', help_text="Reference to the operator which uses current code.")
     def __str__(self):
         return self.operator_code
 
