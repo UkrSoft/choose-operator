@@ -13,8 +13,8 @@ class CommonInfo(models.Model):
         return self.name
 
 class Code(models.Model):
-    operator_code = models.CharField(max_length=10)
-    operator_id = models.ForeignKey('Operator', related_name = 'code')
+    operator_code = models.CharField(max_length=10, help_text="Operator code - several first numbers of phone number for some specific operator")
+    operator_id = models.ForeignKey('Operator', related_name = 'code', help_text="Reference to operator which use current code.")
     def __str__(self):
         return self.operator_code
 
@@ -26,9 +26,9 @@ class Operator(CommonInfo):
         unique_together = (("name","location_id"),)
 
 class Package(CommonInfo):
-    price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0)
-    operator_id = models.ForeignKey('Operator', related_name='package', verbose_name="Operator")
-    package_type_id = models.ForeignKey('PackageType', verbose_name= 'Package Type')
+    price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0, help_text="Initial price of package. Price that you pay when buy a new sim-card.")
+    operator_id = models.ForeignKey('Operator', related_name='package', verbose_name="Operator", help_text="Reference to Operator that is related to current Package.")
+    package_type_id = models.ForeignKey('PackageType', verbose_name= 'Package Type', help_text="")
     po_term_id = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null = True)
     link = models.TextField(blank=True)
     class Meta:
