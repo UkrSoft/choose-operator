@@ -1,2 +1,4 @@
+@echo off
 python manage.py migrate
-pause
+echo DONE.
+pause >nul

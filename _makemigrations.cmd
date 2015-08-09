@@ -1,2 +1,4 @@
+@echo off
 python manage.py makemigrations BestOperator
-pause
+echo DONE.
+pause >nul
