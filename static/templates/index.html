@@ -23,37 +23,44 @@
         <h4 class="text-center">Будь-ласка, оберіть значення параметрів для здійснення пошуку</h4>
 		{% csrf_token %}
         <div class="form-group inner-form">
-            <label for="from_operators_group"><span class="glyphicon glyphicon glyphicon-signal" aria-hidden="true"></span>
+            <label for="from_operators_group"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
                 Пріоритетні оператор(и):</label>
-		    <span class="sr-only"></span>
             <div id="from_operators_group">
-                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="1">МТС</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="2">Life :)</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="3">Київстар</label>
+                {% for operator in operators %}
+                    <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="{{ operator.id }}">{{ operator.name }}</label>
+                {% endfor %}
             </div>
 		</div>
         <div class="form-group inner-form">
-            <label for="to_operators_group"><span class="glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>
+            <label for="to_operators_group"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
                 Пріоритетні напрямки:</label>
-		    <span class="sr-only"></span>
             <div id="to_operators_group">
-                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="1">МТС</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="2">Life :)</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="3">Київстар</label>
+                {% for operator in operators %}
+                    <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="{{ operator.id }}">{{ operator.name }}</label>
+                {% endfor %}
             </div>
 		</div>
         <div class="form-group inner-form">
-            <label for="pref_features_group"><span class="glyphicon glyphicon glyphicon-star" aria-hidden="true"></span>
+            <label for="pref_features_group"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
                 Цікавлять послуги:</label>
-		    <span class="sr-only"></span>
             <div id="pref_features_group">
-                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="1">Інтернет</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="2">СМС</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="3">Дзвінки</label>
-                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="4">Дзвінки за кордон</label>
+                {% for st in serviceTypes %}
+                    <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="{{ st.id }}">{{ st.name }}</label>
+                {% endfor %}
             </div>
 		</div>
-        <button class="btn btn-default submit-button" type="submit">GO!</button>
+        <div class="form-group inner-form">
+            <label for="money_limit_group"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                Максимальна ціна (за місяць):</label>
+            <div id="money_limit_group">
+                <div class="input-group">
+                  <span class="input-group-addon">ГРН</span>
+                  <input type="text" class="form-control" aria-label="Ціна (до цілої гривні)">
+                  <span class="input-group-addon">.00</span>
+                </div>
+            </div>
+		</div>
+        <button class="btn btn-default submit-button" type="submit">Печи!</button>
 	</form>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

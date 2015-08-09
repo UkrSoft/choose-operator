@@ -3,8 +3,8 @@ __author__ = 'Kostiantyn Bezverkhyi'
 from django.db import models
 
 class CommonInfo(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank = True)
+    name = models.CharField(max_length=200, help_text="Name of the current object.")
+    description = models.TextField(blank = True, help_text="Any useful information which may be used to easily operate current object.")
 
     class Meta:
         abstract = True
@@ -20,8 +20,8 @@ class Code(models.Model):
 
 class Operator(CommonInfo):
     #todo-me: name field should be unique for operator
-    location_id = models.ForeignKey('Location',verbose_name="Location")
-    link = models.TextField(blank=True)
+    location_id = models.ForeignKey('Location',verbose_name="Location", help_text="Reference to location where this operator is available.")#could me multiple??
+    link = models.TextField(blank=True, help_text="Link to the site where current operator resides.")
     class Meta:
         unique_together = (("name","location_id"),)
 
@@ -53,7 +53,7 @@ class POTerm(models.Model):
         return 'Active from  %s to %s' % (self.active_from_date, self.active_to_date)
 
 class Period(CommonInfo):
-    #todo-me: chech variant with using DurationField type for remresenting period in days
+    #todo-me: check variant with using DurationField type for resetting period in days
     num_of_days = models.IntegerField("Number of days for period")
     #fields from_time and to_time represent information about period of time, when this offer or feature are working. For example: internet only during night hours
     from_time = models.DateTimeField(blank=True)
@@ -90,11 +90,17 @@ class Location(CommonInfo):
     included_in = models.ForeignKey('self', null=True, blank = True, verbose_name="Included in Location")
     location_type_id = models.ForeignKey('LocationType', verbose_name="Location Type")
     class Meta:
-       unique_together = (("name"  ,"included_in"),)
+       unique_together = (("name" ,"included_in"),)
 
 class ServiceType(CommonInfo):
-    #todo-me: name field should be unique for operator
     pass
+    # is_displayed = models.BooleanField(default=False);
+    #todo-me: name field should be unique for operator
+    # def save(self, *args, **kwargs):#TODO you may try overriding this method
+    #         if self.name == "Yoko Ono's blog":
+    #             return # Yoko shall never have her own blog!
+    #         else:
+    #             super(Blog, self).save(*args, **kwargs) # Call the "real" save() method.
 
 class Direction(models.Model):
     from_location_id = models.ForeignKey('Location', related_name="from_directions", verbose_name="From Location")

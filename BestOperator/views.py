@@ -1,9 +1,8 @@
-import datetime
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
-from BestOperator.models import Operator, Feature
+from BestOperator.models import Operator, Feature, ServiceType
 
 
 class MainView(TemplateView):
@@ -12,8 +11,8 @@ class MainView(TemplateView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(MainView, self).get_context_data(**kwargs)
-        context['now'] = datetime.datetime.now()
-
+        context['operators'] = Operator.objects.all();
+        context['serviceTypes'] = ServiceType.objects.filter();#TODO need to specify which feature to show on form - filter by field is_displayed
         # Sequence of operations (app logic):
         # 1) get input:
         #   get source operator preferences: mts, kyivstar, life; - percentage; sum of the criteria values should be 100%

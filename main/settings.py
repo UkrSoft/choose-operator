@@ -93,19 +93,18 @@ DATABASES = {
 		'HOST': '127.0.0.1', 
 		'PORT': '3306'
     },
-    'oracle': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'xe',
-        'USER': 'bestopadmin',
-        'PASSWORD': 'iamthebest',
-        'HOST': '127.0.0.1',
-        'PORT': '1521',
-		'OPTIONS': {
-			'threaded': True,
-		},
-    }
+    # 'oracle': {
+    #     'ENGINE': 'django.db.backends.oracle',
+    #     'NAME': 'xe',
+    #     'USER': 'bestopadmin',
+    #     'PASSWORD': 'iamthebest',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '1521',
+		# 'OPTIONS': {
+		# 	'threaded': True,
+		# },
+    # }
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

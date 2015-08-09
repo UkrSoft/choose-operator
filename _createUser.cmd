@@ -1,2 +1,4 @@
-%python% manage.py createsuperuser --username=admin --email=admin@example.com
+set username="admin"
+set email="admin@example.com"
+%python% manage.py createsuperuser --username=%username% --email=%email%
 pause

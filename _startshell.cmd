@@ -1,2 +1,2 @@
-manage.py shell
+python manage.py shell
 pause
