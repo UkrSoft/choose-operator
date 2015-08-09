@@ -27,13 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMIN_TOOLS_INDEX_DASHBOARD = 'BestOperator.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'BestOperator.dashboard.CustomAppIndexDashboard'
 
 # Application definition
 
 INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'admin_tools',
+    'admin_tools.dashboard',
+    'admin_tools.menu',
+    'admin_tools.theming',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -80,6 +86,14 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bestoperator', 
+		'USER': 'bestoperator', 
+		'PASSWORD': 'iamthebest', 
+		'HOST': '127.0.0.1', 
+		'PORT': '3306'
+    },
+    'oracle': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'xe',
         'USER': 'bestopadmin',

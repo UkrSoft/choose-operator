@@ -8,6 +8,7 @@
     <title>Best Operator</title>
     {% load staticfiles %}
     <!-- Bootstrap -->
+    <link href="/static/custom.css" rel="stylesheet">
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -18,30 +19,41 @@
     <![endif]-->
 </head>
 <body>
-    <h1>Current time {{ now }}</h1>
-	<form id='store_data' method='POST' action='/index/results/'>
+	<form id='store_data' method='POST' action='/index/results/' class="main-form">
+        <h4 class="text-center">Будь-ласка, оберіть значення параметрів для здійснення пошуку</h4>
 		{% csrf_token %}
-		<div class="alert alert-danger" role="alert">
-		  <span class="glyphicon glyphicon glyphicon-signal" aria-hidden="true"></span>
-		  <span class="sr-only">Оператори</span>
-		  Будь-ласка, виберіть операторів, яким надаєте перевагу:
+        <div class="form-group inner-form">
+            <label for="from_operators_group"><span class="glyphicon glyphicon glyphicon-signal" aria-hidden="true"></span>
+                Пріоритетні оператор(и):</label>
+		    <span class="sr-only"></span>
+            <div id="from_operators_group">
+                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="1">МТС</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="2">Life :)</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="3">Київстар</label>
+            </div>
 		</div>
-		<!-- Split button -->
-		<div class="btn-group">
-		  <button type="button" class="btn btn-danger">Action</button>
-		  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			<span class="caret"></span>
-			<span class="sr-only">Toggle Dropdown</span>
-		  </button>
-		  <ul class="dropdown-menu">
-			<li><a href="#">Action</a></li>
-			<li><a href="#">Another action</a></li>
-			<li><a href="#">Something else here</a></li>
-			<li role="separator" class="divider"></li>
-			<li><a href="#">Separated link</a></li>
-		  </ul>
+        <div class="form-group inner-form">
+            <label for="to_operators_group"><span class="glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>
+                Пріоритетні напрямки:</label>
+		    <span class="sr-only"></span>
+            <div id="to_operators_group">
+                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="1">МТС</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="2">Life :)</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="3">Київстар</label>
+            </div>
 		</div>
-		<input type='submit' value='Вперед!'/>
+        <div class="form-group inner-form">
+            <label for="pref_features_group"><span class="glyphicon glyphicon glyphicon-star" aria-hidden="true"></span>
+                Цікавлять послуги:</label>
+		    <span class="sr-only"></span>
+            <div id="pref_features_group">
+                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="1">Інтернет</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="2">СМС</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="3">Дзвінки</label>
+                <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="4">Дзвінки за кордон</label>
+            </div>
+		</div>
+        <button class="btn btn-default submit-button" type="submit">GO!</button>
 	</form>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

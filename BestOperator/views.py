@@ -42,8 +42,8 @@ class MainView(TemplateView):
 
 def get_results(request):
     try:
-        prefOperatorsObjects = Operator.objects.filter(pk=request.POST['pref_operators'])
-        callOperatorsObjects =  Operator.objects.filter(pk=request.POST['call_operators'])
+        prefOperatorsObjects = Operator.objects.filter(pk=request.POST['from_operators'])
+        callOperatorsObjects =  Operator.objects.filter(pk=request.POST['to_operators'])
         preferredFeatures = Feature.objects.filter(pk=request.POST['pref_features'])
         money_limit = request.POST['money_limit']
     except (KeyError, Operator.DoesNotExist):#fix this

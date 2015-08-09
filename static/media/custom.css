@@ -1,0 +1,21 @@
+.main-form {
+	background-color: #fff;
+    border: 1px solid #e1e1e8;
+	margin: 15px 15px 15px;
+    width: 600px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.inner-form {
+	background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+	margin: 15px 15px 15px;
+}
+.submit-button {
+    /*margin-left: 90%;*/
+    position: relative;
+    left: 90%;
+    bottom: 5px;
+}
