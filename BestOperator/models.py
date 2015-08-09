@@ -44,10 +44,10 @@ class Offer(CommonInfo):
     link = models.TextField(blank=True)
 
 class POTerm(models.Model):
-    active_from_date = models.DateField(blank=True)
-    active_to_date = models.DateField(blank=True)
-    order_from_date = models.DateField(blank=True)
-    order_to_date = models.DateField(blank=True)
+    active_from_date = models.DateField(null=True, blank=True)
+    active_to_date = models.DateField(null=True, blank=True)
+    order_from_date = models.DateField(null=True, blank=True)
+    order_to_date = models.DateField(null=True, blank=True)
     is_active = models.IntegerField(default=1)
     def __str__(self):
         return 'Active from  %s to %s' % (self.active_from_date, self.active_to_date)
@@ -56,8 +56,8 @@ class Period(CommonInfo):
     #todo-me: check variant with using DurationField type for resetting period in days
     num_of_days = models.IntegerField("Number of days for period")
     #fields from_time and to_time represent information about period of time, when this offer or feature are working. For example: internet only during night hours
-    from_time = models.DateTimeField(blank=True)
-    to_time = models.DateTimeField(blank=True)
+    from_time = models.DateTimeField(null=True, blank=True)
+    to_time = models.DateTimeField(null=True, blank=True)
 
 class Payment(models.Model):
     price = models.DecimalField("Price", max_digits=7, decimal_places=2, default=0)

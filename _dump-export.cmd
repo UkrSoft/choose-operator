@@ -8,7 +8,7 @@ set utils_location=%dump_location%utils\
 set back_db_file=back.data
 set full_dump_path=%dump_location%%back_db_file%
 echo Creating dump file...
-mysqldump -u%username% -p%pass% --database %db_name% > "%full_dump_path%"
+mysqldump -u%username% -p%pass% %db_name% > "%full_dump_path%"
 if errorlevel 1 (
 goto :exit_label
 ) else (
