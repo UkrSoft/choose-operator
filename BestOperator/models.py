@@ -34,7 +34,7 @@ class Package(CommonInfo):
                                  help_text="Reference to related Operator.")
     package_type = models.ForeignKey('PackageType', verbose_name='Package Type',
                                      help_text="Some specific Package Type: Prepayment, Contract, Business etc.")
-    po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null=True,
+    po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null=True, blank=True,
                                 help_text="Time term of package usage/order")
     link = models.TextField(blank=True, help_text="Link to the site with current package")
     class Meta:
@@ -69,8 +69,8 @@ class Payment(models.Model):
     price = models.DecimalField("Price", max_digits=7, decimal_places=2, default=0, help_text="Price of Offer/Feature")
     period = models.ForeignKey('Period', help_text="Reference to Period for current Offer/Feature")
     #todo-me Ticket:  [DataBase] Add rule for required only one field from couple #38
-    feature = models.ForeignKey('Feature', related_name='payment', null=True, help_text="Reference to Feature")
-    offer = models.ForeignKey('Offer', related_name='payment', null=True, help_text="Reference to Offer")
+    feature = models.ForeignKey('Feature', related_name='payment', null=True, blank=True, help_text="Reference to Feature")
+    offer = models.ForeignKey('Offer', related_name='payment', null=True, blank=True, help_text="Reference to Offer")
     def __str__(self):
         return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
 
@@ -82,8 +82,8 @@ class TermOfUsage(models.Model):
     criterion = models.ForeignKey('Criterion', verbose_name="Criterion",
                                   help_text="Criterion related to amount. For example: '<'. It means that such TermOfUsage for amount of min/mes that is < amount(field)")
 
-    offer = models.ForeignKey('Offer', verbose_name="Offer", null=True, help_text="Reference to Offer")
-    feature = models.ForeignKey('Package', verbose_name="Package", null=True, help_text="Reference to Package")
+    offer = models.ForeignKey('Offer', verbose_name="Offer", null=True, blank=True, help_text="Reference to Offer")
+    feature = models.ForeignKey('Feature', verbose_name="Feature", null=True, blank=True, help_text="Reference to Package")
     def __str__(self):
         return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
 
@@ -115,9 +115,9 @@ class ServiceType(CommonInfo):
 class Direction(models.Model):
     from_location = models.ForeignKey('Location', related_name="from_directions", verbose_name="From Location",
                                       help_text="Location where you use service: call, internet etc.")
-    to_location = models.ForeignKey('Location', related_name="to_directions", null=True, verbose_name="To Location",
+    to_location = models.ForeignKey('Location', related_name="to_directions", null=True, blank=True, verbose_name="To Location",
                                     help_text="Location where you make a call, send message etc.")
-    to_operator = models.ForeignKey('Operator', verbose_name="To Operarot",
+    to_operator = models.ForeignKey('Operator', verbose_name="To Operarot", null=True, blank=True,
                                     help_text="Destination operator, who will receive call or message")
     def __str__(self):
         return '%s -> %s' % (self.from_location, self.to_location)
@@ -134,8 +134,8 @@ class Service(CommonInfo):
 
 class Feature(models.Model):
     #todo-me Ticket: [DataBase] Add rule for required only one field from couple #38
-    offer = models.ForeignKey(Offer, verbose_name="Offer", null=True, help_text="Related Offer")
-    package = models.ForeignKey(Package, verbose_name="Package", null=True, help_text="Related Package")
+    offer = models.ForeignKey(Offer, verbose_name="Offer", null=True, blank=True, help_text="Related Offer")
+    package = models.ForeignKey(Package, verbose_name="Package", null=True, blank=True, help_text="Related Package")
     service = models.ForeignKey(Service, verbose_name="Service", help_text="Provided service in scope of this feature")
     #todo-me Need to change next method. In current example only package or offer will be populated
     def __str__(self):
@@ -151,10 +151,10 @@ class Attribute(CommonInfo):
 
 class Param(models.Model):
     attr = models.ForeignKey(Attribute, verbose_name="Attribute", help_text="Reference to Attribute")
-    value = models.CharField(max_length=500, blank=True, help_text="Value of parameter")
+    value = models.CharField(max_length=500, null = True, blank=True, help_text="Value of parameter")
     feature = models.ForeignKey('Feature', verbose_name="Feature", help_text="Reference to Feature" )
     def __str__(self):
-        return self.attr
+        return self.attr.name
 
 class Directory(models.Model):
     key = models.CharField(max_length=200, help_text="Name of the key")

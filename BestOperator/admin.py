@@ -45,6 +45,9 @@ class PackageAdmin(admin.ModelAdmin):
     list_display = ('name','description', 'price', 'operator')
     # inlines = [OfferInline]
 
+class ParamAdmin(admin.ModelAdmin):
+    list_display = ('attr','value', 'feature')
+
 # todo-me: create customized representations of Offers-Features and Features-Params
 admin.site.register(Direction)
 admin.site.register(ServiceType,ServiceTypeAdmin)
@@ -54,7 +57,7 @@ admin.site.register(Service, ServicesAdmin)
 admin.site.register(Operator, OperatorAdmin)
 admin.site.register(Feature)
 admin.site.register(Offer)
-admin.site.register(Param)
+admin.site.register(Param, ParamAdmin)
 admin.site.register(Attribute)
 admin.site.register(Payment)
 admin.site.register(Period)
@@ -63,4 +66,6 @@ admin.site.register(Criterion)
 admin.site.register(TermOfUsage)
 admin.site.register(LocationType)
 admin.site.register(PackageType)
+admin.site.register(Directory)
+admin.site.register(Code)
 
