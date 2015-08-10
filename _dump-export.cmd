@@ -17,7 +17,7 @@ echo OK.
 )
 
 echo Zipping dump file...
-"%utils_location%7z.exe" a "%full_dump_path%.zip" "%full_dump_path%" -o{"%dump_location%"} >nul
+"%utils_location%7z.exe" a -y "%full_dump_path%.zip" "%full_dump_path%" -o{"%dump_location%"} >nul
 if errorlevel 1 (
 goto :exit_label
 ) else (

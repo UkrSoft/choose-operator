@@ -11,7 +11,7 @@ echo Are you READY for the show?
 pause >nul
 
 echo Extracting dump file...
-"%utils_location%7z.exe" x "%full_dump_path%.zip" -o"%dump_location%" >nul
+"%utils_location%7z.exe" x -y "%full_dump_path%.zip" -o"%dump_location%" >nul
 if errorlevel 1 (
 goto :exit_label
 ) else (
@@ -19,7 +19,8 @@ echo OK.
 )
 
 echo Flusing the database...
-mysql -b -u%username% -p%pass% < _mysql_recreate.sql
+mysql -b -u %username% -p%pass% -e "drop database bestoperator;" >nul
+mysql -b -u %username% -p%pass% -e "create database bestoperator;" >nul
 if errorlevel 1 (
 goto :exit_label
 ) else (
