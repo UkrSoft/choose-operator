@@ -6,16 +6,16 @@ from .models import *
 
 # class OfferInline(admin.TabularInline):
 #     model = Offer
-#     fk_name = 'package_id'
+#     fk_name = 'package'
 #     # raw_id_fields = ('emp_id', 'manager_id')
-#     fieldsets = [(None, {'fields': ['payment_id', 'package_id', 'po_term_id', 'link']}),]
+#     fieldsets = [(None, {'fields': ['payment', 'package', 'po_term', 'link']}),]
 #     extra = 0
 
 class PackageInline(admin.TabularInline):
     model = Package
-    fk_name = 'package_id'
+    fk_name = 'package'
     # raw_id_fields = ('emp_id', 'manager_id')
-    fieldsets = [(None, {'fields': ['name', 'package_type_id', 'price', 'link']}),]
+    fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}),]
     extra = 0
 
 class LocationAdmin(admin.ModelAdmin):
@@ -31,10 +31,10 @@ class DirectionsInline(admin.TabularInline):
 class ServicesAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['name','description']}),
-        ('Reference Info', {'fields': ['service_type_id','direction_id']}),
+        ('Reference Info', {'fields': ['service_type','direction']}),
     ]
     inline = [DirectionsInline]
-    list_display = ('name', 'description','service_type_id','direction_id')
+    list_display = ('name', 'description','service_type','direction')
 
 #admin.site.register(Services)
 class OperatorAdmin(admin.ModelAdmin):
@@ -42,7 +42,7 @@ class OperatorAdmin(admin.ModelAdmin):
     inline = [PackageInline]
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ('name','description', 'price', 'operator_id')
+    list_display = ('name','description', 'price', 'operator')
     # inlines = [OfferInline]
 
 # todo-me: create customized representations of Offers-Features and Features-Params

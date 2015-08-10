@@ -14,33 +14,33 @@ class CommonInfo(models.Model):
 
 class Code(models.Model):
     operator_code = models.CharField(max_length=10, help_text="Operator code - several first numbers of phone number for some specific operator")
-    operator_id = models.ForeignKey('Operator', related_name = 'code', help_text="Reference to operator which use current code.")
+    operator = models.ForeignKey('Operator', related_name = 'code', help_text="Reference to operator which use current code.")
     def __str__(self):
         return self.operator_code
 
 class Operator(CommonInfo):
     #todo-me: name field should be unique for operator
-    location_id = models.ForeignKey('Location',verbose_name="Location", help_text="Reference to location where this operator is available.")#could me multiple??
+    location = models.ForeignKey('Location',verbose_name="Location", help_text="Reference to location where this operator is available.")#could me multiple??
     link = models.TextField(blank=True, help_text="Link to the site where current operator resides.")
     class Meta:
-        unique_together = (("name","location_id"),)
+        unique_together = (("name","location"),)
 
 class Package(CommonInfo):
     price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0, help_text="Initial price of package. Price that you pay when buy a new sim-card.")
-    operator_id = models.ForeignKey('Operator', related_name='package', verbose_name="Operator", help_text="Reference to Operator that is related to current Package.")
-    package_type_id = models.ForeignKey('PackageType', verbose_name= 'Package Type', help_text="")
-    po_term_id = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null = True)
+    operator = models.ForeignKey('Operator', related_name='package', verbose_name="Operator", help_text="Reference to Operator that is related to current Package.")
+    package_type = models.ForeignKey('PackageType', verbose_name= 'Package Type', help_text="")
+    po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null = True)
     link = models.TextField(blank=True)
     class Meta:
-        unique_together = (("name", "operator_id"),)
+        unique_together = (("name", "operator"),)
 
 class PackageType(CommonInfo):
     pass
 
 class Offer(CommonInfo):
-    payment_id = models.ForeignKey('Payment', verbose_name="Payment")
-    package_id = models.ManyToManyField(Package, verbose_name="Package")
-    po_term_id = models.ForeignKey('POTerm', verbose_name='Package/Offer Term')
+    payment = models.ForeignKey('Payment', verbose_name="Payment")
+    package = models.ManyToManyField(Package, verbose_name="Package")
+    po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term')
     link = models.TextField(blank=True)
 
 class POTerm(models.Model):
@@ -61,23 +61,23 @@ class Period(CommonInfo):
 
 class Payment(models.Model):
     price = models.DecimalField("Price", max_digits=7, decimal_places=2, default=0)
-    period_id = models.ForeignKey('Period')
+    period = models.ForeignKey('Period')
     #todo-me Ticket:  [DataBase] Add rule for required only one field from couple #38
-    feature_id = models.ForeignKey('Feature', related_name='payment',null=True)
-    offer_id = models.ForeignKey('Offer', related_name='payment', null=True)
+    feature = models.ForeignKey('Feature', related_name='payment',null=True)
+    offer = models.ForeignKey('Offer', related_name='payment', null=True)
     def __str__(self):
-        return 'Price of %s:%s for %s period' % (self.offer_id, self.feature_id, self.period_id)
+        return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
 
 #This table represents possible terms of using some feature/offer. For example: 10 first minutes for one price, 11 and next minutes have another price
 class TermOfUsage(models.Model):
-    period_id = models.ForeignKey(Period, verbose_name="Period")
+    period = models.ForeignKey(Period, verbose_name="Period")
     amount = models.IntegerField("Amount of minutes/message/Mbits")
-    criterion_id = models.ForeignKey('Criterion', verbose_name="Criterion")
+    criterion = models.ForeignKey('Criterion', verbose_name="Criterion")
 
-    offer_id = models.ForeignKey('Offer', verbose_name="Offer", null=True)
-    feature_id = models.ForeignKey('Package', verbose_name="Package", null=True)
+    offer = models.ForeignKey('Offer', verbose_name="Offer", null=True)
+    feature = models.ForeignKey('Package', verbose_name="Package", null=True)
     def __str__(self):
-        return 'Price of %s:%s for %s period' % (self.offer_id, self.feature_id, self.period_id)
+        return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
 
 #This table represent information about possible criteria: >, >=, =, <=, <
 class Criterion(CommonInfo):
@@ -88,13 +88,13 @@ class LocationType(CommonInfo):
 
 class Location(CommonInfo):
     included_in = models.ForeignKey('self', null=True, blank = True, verbose_name="Included in Location")
-    location_type_id = models.ForeignKey('LocationType', verbose_name="Location Type")
+    location_type = models.ForeignKey('LocationType', verbose_name="Location Type")
     class Meta:
        unique_together = (("name" ,"included_in"),)
 
 class ServiceType(CommonInfo):
     pass
-    is_displayed = models.BooleanField(default=False);
+    is_displayed = models.BooleanField(default=False)
     #todo-me: name field should be unique for operator
     # def save(self, *args, **kwargs):#TODO you may try overriding this method
     #         if self.name == "Yoko Ono's blog":
@@ -103,42 +103,42 @@ class ServiceType(CommonInfo):
     #             super(Blog, self).save(*args, **kwargs) # Call the "real" save() method.
 
 class Direction(models.Model):
-    from_location_id = models.ForeignKey('Location', related_name="from_directions", verbose_name="From Location")
-    to_location_id = models.ForeignKey('Location', related_name="to_directions", null = True, verbose_name="To Location")
-    to_operator_id = models.ForeignKey('Operator',verbose_name="To Operarot")
+    from_location = models.ForeignKey('Location', related_name="from_directions", verbose_name="From Location")
+    to_location = models.ForeignKey('Location', related_name="to_directions", null = True, verbose_name="To Location")
+    to_operator = models.ForeignKey('Operator',verbose_name="To Operarot")
     def __str__(self):
-        return '%s -> %s' % (self.from_location_id, self.to_location_id)
+        return '%s -> %s' % (self.from_location, self.to_location)
     class Meta:
-        unique_together = (("from_location_id","to_location_id"),)
+        unique_together = (("from_location","to_location"),)
 
 class Service(CommonInfo):
-    service_type_id = models.ForeignKey('ServiceType', verbose_name="Service Type")
-    direction_id = models.ForeignKey('Direction', verbose_name="Direction")
+    service_type = models.ForeignKey('ServiceType', verbose_name="Service Type")
+    direction = models.ForeignKey('Direction', verbose_name="Direction")
     class Meta:
-        unique_together = (("service_type_id", "direction_id"),)
+        unique_together = (("service_type", "direction"),)
 
 class Feature(models.Model):
     #todo-me Ticket: [DataBase] Add rule for required only one field from couple #38
-    offer_id = models.ForeignKey(Offer, verbose_name="Offer", null = True)
-    package_id = models.ForeignKey(Package, verbose_name="Package", null = True)
-    service_id = models.ForeignKey(Service, verbose_name="Service")
-    #todo-me Need to change next method. In current example only package_id or offer_id will be populated
+    offer = models.ForeignKey(Offer, verbose_name="Offer", null = True)
+    package = models.ForeignKey(Package, verbose_name="Package", null = True)
+    service = models.ForeignKey(Service, verbose_name="Service")
+    #todo-me Need to change next method. In current example only package or offer will be populated
     def __str__(self):
-        return '%s:%s - %s' % (self.package_id, self.offer_id, self.service_id)
+        return '%s:%s - %s' % (self.package, self.offer, self.service)
     class Meta:
-        unique_together = (("offer_id","service_id"),)
+        unique_together = (("offer","service"),)
 
 class Attribute(CommonInfo):
-    service_type_id = models.ForeignKey(ServiceType, verbose_name="Service Type")
+    service_type = models.ForeignKey(ServiceType, verbose_name="Service Type")
     class Meta:
-        unique_together = (("service_type_id","name"),)
+        unique_together = (("service_type","name"),)
 
 class Param(models.Model):
-    attr_id = models.ForeignKey(Attribute, verbose_name="Attribute")
+    attr = models.ForeignKey(Attribute, verbose_name="Attribute")
     value = models.CharField(max_length=500, blank = True)
     feature_id = models.ForeignKey('Feature', verbose_name="Feature")
     def __str__(self):
-        return self.attr_id
+        return self.attr
 
 class Directory(models.Model):
     key = models.CharField(max_length=200)
