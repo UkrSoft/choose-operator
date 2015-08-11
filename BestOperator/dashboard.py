@@ -87,7 +87,7 @@ class CustomIndexDashboard(Dashboard):
             modules.ModelList(
                 title = _('Administrative'),
                 models = (
-                    'BestOperator.models.Direction',
+                    'BestOperator.models.Directory',
                     'BestOperator.models.ServiceType',
                     'BestOperator.models.LocationType',
                     'BestOperator.models.PackageType',

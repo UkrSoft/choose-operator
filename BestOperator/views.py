@@ -47,6 +47,7 @@ def get_results(request):
         money_limit = request.POST['money_limit']
     except (KeyError, Operator.DoesNotExist):#fix this
         # Redisplay the question voting form.
+        
         return render(request, 'index.html', {
             'error_message': "Ви не зробили свій вибір.",
         })
