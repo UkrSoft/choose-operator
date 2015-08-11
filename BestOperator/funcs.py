@@ -40,18 +40,18 @@ class MagicSql:
                         try:
                             if trans and field in trans:
                                 exec ("cell = " + trans[field]) % {'cell' : cell} #apply transformation described in 'trans' dict; '%(cell)s macros allowable'
-                            t.append("%s"%(cell))
+                            t.append("%s" % cell)
                         except Exception as e:
                             if field in trans.keys():
                                 print('Exception while processing \'%(col)s\' column, value = \'%(cell)s\' with message \'%(message)s\'' % {'col' : field, 'cell' : saved_cell, 'message': trans[field]})
                             else:
                                 print('Exception while processing \'%(col)s\' column, value = \'%(cell)s\'' % {'col' : field, 'cell' : saved_cell})
-                            t.append("%s"%(saved_cell))
+                            t.append("%s" % saved_cell)
                 else:
                     i = 0
                     while True:
                         try:
-                            t.append("%s"%(row[i]))
+                            t.append("%s" % row[i])
                             i += 1
                         except IndexError:
                             break
