@@ -42,11 +42,17 @@ class OperatorAdmin(admin.ModelAdmin):
     inline = [PackageInline]
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ('name','description', 'price', 'operator')
+    list_display = ('name','description', 'price', 'operator', 'link')
     # inlines = [OfferInline]
 
 class ParamAdmin(admin.ModelAdmin):
     list_display = ('attr','value', 'feature')
+
+class CodeAdmin(admin.ModelAdmin):
+    list_display = ('operator_code','operator')
+
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name','description', 'service_type')
 
 # todo-me: create customized representations of Offers-Features and Features-Params
 admin.site.register(Direction)
@@ -58,7 +64,7 @@ admin.site.register(Operator, OperatorAdmin)
 admin.site.register(Feature)
 admin.site.register(Offer)
 admin.site.register(Param, ParamAdmin)
-admin.site.register(Attribute)
+admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Payment)
 admin.site.register(Period)
 admin.site.register(POTerm)
@@ -67,5 +73,5 @@ admin.site.register(TermOfUsage)
 admin.site.register(LocationType)
 admin.site.register(PackageType)
 admin.site.register(Directory)
-admin.site.register(Code)
+admin.site.register(Code, CodeAdmin)
 

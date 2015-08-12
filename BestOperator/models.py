@@ -120,15 +120,20 @@ class Direction(models.Model):
     to_operator = models.ForeignKey('Operator', verbose_name="To Operarot", null=True, blank=True,
                                     help_text="Destination operator, who will receive call or message")
     def __str__(self):
-        return '%s -> %s' % (self.from_location, self.to_location)
+        return '%s -> %s (%s)' % (self.from_location, self.to_location, self.to_operator)
     class Meta:
-        unique_together = (("from_location","to_location"),)
+        unique_together = (("from_location","to_location", "to_operator"),)
 
 class Service(CommonInfo):
     service_type = models.ForeignKey('ServiceType', verbose_name="Service Type",
                                      help_text="Service Type: call, internet, SMS etc.")
     direction = models.ForeignKey('Direction', verbose_name="Direction",
                                   help_text="Direction of the call, sms, internet(just from) etc.")
+    # def save(self, **kwargs):
+    #     if self.name =='1':
+    #         self.name = '%s - %s' % (self.service_type, self.direction)
+    #     super(self).save(**kwargs)
+
     class Meta:
         unique_together = (("service_type", "direction"),)
 
