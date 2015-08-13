@@ -1,0 +1,13 @@
+<html><!--glyphicon glyphicon-bookmark-->
+    <body><h3>SQL DATA:</h3>
+        <table border="1" cellspacing="0">
+            {% for sqlRow in sqlRows %}
+                <tr>
+                {% for cell in sqlRow %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

@@ -19,15 +19,16 @@
     <![endif]-->
 </head>
 <body>
-	<form id='store_data' method='POST' action='/index/results/' class="main-form">
+	<form id='store_data' method='POST' action='{% url 'boo:results' %}' class="main-form">
         <h4 class="text-center">Будь-ласка, оберіть значення параметрів для здійснення пошуку</h4>
+        {% if error_message %}<div class="alert alert-danger" role="alert">{{ error_message }}</div>{% endif %}
 		{% csrf_token %}
         <div class="form-group inner-form">
             <label for="from_operators_group"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>
                 Пріоритетні оператор(и):</label>
             <div id="from_operators_group">
                 {% for operator in operators %}
-                    <label class="checkbox-inline" ><input type="checkbox" id="from_operators" value="{{ operator.id }}">{{ operator.name }}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="from_operators_{{ operator.id }}" name="from_operators" value="{{ operator.id }}">{{ operator.name }}</label>
                 {% endfor %}
             </div>
 		</div>
@@ -36,16 +37,16 @@
                 Пріоритетні напрямки:</label>
             <div id="to_operators_group">
                 {% for operator in operators %}
-                    <label class="checkbox-inline" ><input type="checkbox" id="to_operators" value="{{ operator.id }}">{{ operator.name }}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="to_operators_{{ operator.id }}" name="to_operators" value="{{ operator.id }}">{{ operator.name }}</label>
                 {% endfor %}
             </div>
 		</div>
         <div class="form-group inner-form">
-            <label for="pref_features_group"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+            <label for="pref_services_group"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
                 Цікавлять послуги:</label>
-            <div id="pref_features_group">
+            <div id="pref_services_group">
                 {% for st in serviceTypes %}
-                    <label class="checkbox-inline" ><input type="checkbox" id="pref_features" value="{{ st.id }}">{{ st.name }}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="pref_services_{{ operator.id }}" name="pref_services" value="{{ st.id }}">{{ st.name }}</label>
                 {% endfor %}
             </div>
 		</div>
@@ -55,7 +56,7 @@
             <div id="money_limit_group">
                 <div class="input-group">
                   <span class="input-group-addon">ГРН</span>
-                  <input type="text" class="form-control" aria-label="Ціна (до цілої гривні)" value="0">
+                  <input type="text" class="form-control" aria-label="Ціна (до цілої гривні)" value="0" id="money_limit" name="money_limit">
                   <span class="input-group-addon">.00</span>
                 </div>
             </div>

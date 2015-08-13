@@ -2,38 +2,49 @@ from django.db import connection
 
 class MagicSql:
     """
-        Parse SQL to tuple of tuples (many dimensioned array)
+        Executes and parses SQL to tuple of tuples (many dimensioned array)
+
+        @param sql the query which should be executed
+        @fields names of columns to be outputted as result of this query execution or <code>False<code> if do not need this
+        @trans transformation to be applied to each cell prior returning its value
     """
-    def __init__(self, sql, fields = None, trans = None):
+    def __init__(self, sql, column_names = None, trans = None):
         if trans is None:
             trans = {}
         self.sql = sql
-        self.fields = fields
+        self.column_names = column_names
         self.trans = trans
-        self.rowset = self.execute_sql()
-    def execute_sql(self):
+        self.rowset, self.column_names = self.get_raw()
+    def get_raw(self):
         sql = self.sql
+        column_names = self.column_names
         rowset = None
         if sql:
             cursor = connection.cursor()
             cursor.execute(sql)
+            if (column_names is None):
+                if not cursor.description:
+                    column_names = ()
+                else:
+                    column_names = tuple([d[0] for d in cursor.description])
             rowset = cursor.fetchall()
-        return rowset
-    def get_dict(self):
+            cursor.close()
+        return rowset, column_names
+    def get_results(self):
         rowset = self.rowset
-        fields = self.fields
+        column_names = self.column_names
         trans = self.trans
-        if fields:
-            result_set = (fields, )
+        if column_names:
+            result_set = (column_names, )
         else:
             result_set = ()
         if rowset:
             for row in rowset:
                 t = []
-                if fields:
-                    for field in fields:
+                if column_names:
+                    for field in column_names:
                         try:
-                            cell = row[fields.index('%s' % field)] #get value of dedicated cell
+                            cell = row[column_names.index('%s' % field)] #get value of dedicated cell
                             saved_cell = cell
                         except KeyError:
                             cell = '' #or return empty cell

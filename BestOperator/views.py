@@ -1,25 +1,63 @@
+from django.template import RequestContext
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from BestOperator.models import Operator, Feature, ServiceType
-
+from BestOperator.funcs import MagicSql
+from BestOperator.models import Operator, ServiceType
 
 class MainView(TemplateView):
-    template_name = "index.html"#TODO add templates caching
+    template_name = "BestOperator/index.html"
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
         context = super(MainView, self).get_context_data(**kwargs)
         context['operators'] = Operator.objects.all();
         context['serviceTypes'] = ServiceType.objects.filter(is_displayed=True);
-        # Sequence of operations (app logic):
+        return context
+
+def post_results(request):
+    if (request.method!='POST'):
+        return HttpResponseRedirect(reverse('boo:index'))
+    try:#TODO make not all parameters required. Basically we could run this without any params at all
         # 1) get input:
         #   get source operator preferences: mts, kyivstar, life; - percentage; sum of the criteria values should be 100%
         #   get target operator preferences: mts, kyivstar, life; - percentage; sum of the criteria values should be 100%
         #   get target usage preferences: data, sms, calls, international calls? - percentage; sum of the criteria values should be 100%
         #   get money preferences: what is monthly limit for you (slider) - integer, "0" by default, this means "no limit"
-        #
+        fromOperators = Operator.objects.filter(pk=request.POST['from_operators'])
+        toOperators = Operator.objects.filter(pk=request.POST['to_operators'])
+        preferredServices = ServiceType.objects.filter(pk=request.POST['pref_services'])
+        moneyLimit = request.POST['money_limit']
+    except (KeyError, Operator.DoesNotExist, ServiceType.DoesNotExist):
+        # Redisplay the question voting form.
+        context = RequestContext(request, {
+            'error_message': "Ви не зробили свій вибір.",
+        })
+        return render(request, 'BestOperator/index.html', context)#TODO HttpResponseRedirect
+    else:
+        sql = 'select  ' \
+        '    o.name as \'Operator Name\'' \
+        '    , p.name as \'Package\'' \
+        '    , p.description as \'Description\'' \
+        '    , p.price as \'Price\'' \
+        '    ,  p.link as \'URL\'' \
+        '    ,  off.name as \'Offer Name\'' \
+        '    ,  f.id as \'Feature ID\'' \
+        '    ,  s.name as \'Service Name\'' \
+        '    ,  st.name as \'Service Type Name\'' \
+        '    ,  a.name as \'Attribute\'' \
+        '    ,  par.value as \'Value\' ' \
+        'from  ' \
+        '    bestoperator_operator o' \
+        '    join bestoperator_package p on p.operator_id = o.id' \
+        '    left join bestoperator_feature f on f.package_id = p.id' \
+        '    left join bestoperator_offer off on f.offer_id = off.id' \
+        '    left join bestoperator_offer_package_id oftp on oftp.package_id = p.id and oftp.offer_id = off.id' \
+        '    left join bestoperator_service s on f.service_id = s.id' \
+        '    left join bestoperator_servicetype st on st.id = s.service_type_id' \
+        '    left join bestoperator_param par on par.feature_id = f.id' \
+        '    left join bestoperator_attribute a on par.attr_id = a.id'
+        sqlRows = MagicSql(sql).get_results()
         # 2) make calculations:
         #   this would be just one multi-table join SQL query
         #       input parameters filtering list will be concatenated as dynamic SQL at runtime just BEFORE script execution.
@@ -30,32 +68,13 @@ class MainView(TemplateView):
         #       all package criteria resulting values should be summarized
         #   packages should be sorted by this resulting sum
         #   results should be represented as list of rows - 1 row for the separate package to output
-        #
+        context = RequestContext(request, {
+            'sqlRows': sqlRows,
+        })
         # 3) output data:
         #   output packages on the results page
         #   use the same template as for data input (only difference is - pass resulting table parameter to template)
         #   packages to be grouped inside of the template (it is cheep operation, because little amount of packages to be shown on the page)
         #   table headers will be transposed to row names (this will be the feature names) in the resulting page
         #   each table row will be transposed to separate column with 1 package in it
-        return context
-
-def get_results(request):
-    try:
-        prefOperatorsObjects = Operator.objects.filter(pk=request.POST['from_operators'])
-        callOperatorsObjects =  Operator.objects.filter(pk=request.POST['to_operators'])
-        preferredFeatures = Feature.objects.filter(pk=request.POST['pref_features'])
-        money_limit = request.POST['money_limit']
-    except (KeyError, Operator.DoesNotExist):#fix this
-        # Redisplay the question voting form.
-        
-        return render(request, 'index.html', {
-            'error_message': "Ви не зробили свій вибір.",
-        })
-    else:
-        # selected_choice.votes += 1
-        # selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        # return HttpResponseRedirect(reverse('polls:results'))
-        return render(request, 'index.html')
+        return render(request, 'BestOperator/results.html', context)#TODO HttpResponseRedirect

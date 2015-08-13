@@ -19,8 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', include('BestOperator.urls')),
     url(r'^admin/', include(admin.site.urls), name='admin'),
-
     url(r'^admin_tools/', include('admin_tools.urls')),
+    url(r'^', include('BestOperator.urls', namespace='boo')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
