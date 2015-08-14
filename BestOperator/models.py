@@ -59,7 +59,7 @@ class POTerm(models.Model):
 
 class Period(CommonInfo):
     #todo-me: check variant with using DurationField type for resetting period in days
-    num_of_days = models.IntegerField("Number of days for period", help_text="Number of day for current period.")
+    num_of_days = models.IntegerField("Number of days for period", null=True, blank=True, help_text="Number of day for current period.")
     from_time = models.DateTimeField(null=True, blank=True,
                                      help_text="Period of time whne Offer/Feature is active. For example: from 01.00")
     to_time = models.DateTimeField(null=True, blank=True,
@@ -67,7 +67,8 @@ class Period(CommonInfo):
 
 class Payment(models.Model):
     price = models.DecimalField("Price", max_digits=7, decimal_places=2, default=0, help_text="Price of Offer/Feature")
-    period = models.ForeignKey('Period', help_text="Reference to Period for current Offer/Feature")
+    period = models.ForeignKey('Period', null=True, blank = True, help_text="Reference to Period for current Offer/Feature")
+    term_of_usage = models.ForeignKey('TermOfUsage', null=True, blank = True, help_text="Reference to Term Of Usage")
     #todo-me Ticket:  [DataBase] Add rule for required only one field from couple #38
     feature = models.ForeignKey('Feature', related_name='payment', null=True, blank=True, help_text="Reference to Feature")
     offer = models.ForeignKey('Offer', related_name='payment', null=True, blank=True, help_text="Reference to Offer")
@@ -76,16 +77,12 @@ class Payment(models.Model):
 
 #This table represents possible terms of using some feature/offer. For example: 10 first minutes for one price, 11 and next minutes have another price
 class TermOfUsage(models.Model):
-    period = models.ForeignKey(Period, verbose_name="Period", help_text="Period of tme when Offer/Feature is in use")
     amount = models.IntegerField("Amount of minutes/message/Mbits",
                                  help_text="Amount of minutes/message/Mbits that are limited")
     criterion = models.ForeignKey('Criterion', verbose_name="Criterion",
                                   help_text="Criterion related to amount. For example: '<'. It means that such TermOfUsage for amount of min/mes that is < amount(field)")
-
-    offer = models.ForeignKey('Offer', verbose_name="Offer", null=True, blank=True, help_text="Reference to Offer")
-    feature = models.ForeignKey('Feature', verbose_name="Feature", null=True, blank=True, help_text="Reference to Package")
     def __str__(self):
-        return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
+        return 'Term of Usage: %s:%s' % (self.criterion, self.amount)
 
 #This table represent information about possible criteria: >, >=, =, <=, <
 class Criterion(CommonInfo):
@@ -120,19 +117,25 @@ class Direction(models.Model):
     to_operator = models.ForeignKey('Operator', verbose_name="To Operarot", null=True, blank=True,
                                     help_text="Destination operator, who will receive call or message")
     def __str__(self):
-        return '%s -> %s' % (self.from_location, self.to_location)
+        return '%s -> %s (%s)' % (self.from_location, self.to_location, self.to_operator)
     class Meta:
-        unique_together = (("from_location","to_location"),)
+        unique_together = (("from_location","to_location", "to_operator"),)
 
 class Service(CommonInfo):
     service_type = models.ForeignKey('ServiceType', verbose_name="Service Type",
                                      help_text="Service Type: call, internet, SMS etc.")
     direction = models.ForeignKey('Direction', verbose_name="Direction",
                                   help_text="Direction of the call, sms, internet(just from) etc.")
+    # def save(self, **kwargs):
+    #     if self.name =='1':
+    #         self.name = '%s - %s' % (self.service_type, self.direction)
+    #     super(self).save(**kwargs)
+
     class Meta:
         unique_together = (("service_type", "direction"),)
 
 class Feature(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be used to easily operate current object.")
     #todo-me Ticket: [DataBase] Add rule for required only one field from couple #38
     offer = models.ForeignKey(Offer, verbose_name="Offer", null=True, blank=True, help_text="Related Offer")
     package = models.ForeignKey(Package, verbose_name="Package", null=True, blank=True, help_text="Related Package")
