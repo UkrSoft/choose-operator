@@ -1,3 +1,4 @@
+from collections import namedtuple
 from django.db import connection
 
 class MagicSql:
@@ -30,6 +31,13 @@ class MagicSql:
             rowset = cursor.fetchall()
             cursor.close()
         return rowset, column_names
+    def get_named_tuple(self):
+        rowset = self.rowset
+        column_names = self.column_names
+        if column_names is None:
+            return self.get_results()
+        tuple_def = namedtuple('Columns', column_names)
+        return map(tuple_def._make, rowset)
     def get_results(self):
         rowset = self.rowset
         column_names = self.column_names

@@ -75,7 +75,9 @@ class Payment(models.Model):
     def __str__(self):
         return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
 
-#This table represents possible terms of using some feature/offer. For example: 10 first minutes for one price, 11 and next minutes have another price
+"""
+This table represents possible terms of using some feature/offer. For example: 10 first minutes for one price, 11 and next minutes have another price
+"""
 class TermOfUsage(models.Model):
     amount = models.IntegerField("Amount of minutes/message/Mbits",
                                  help_text="Amount of minutes/message/Mbits that are limited")
@@ -84,7 +86,9 @@ class TermOfUsage(models.Model):
     def __str__(self):
         return 'Term of Usage: %s:%s' % (self.criterion, self.amount)
 
-#This table represent information about possible criteria: >, >=, =, <=, <
+"""
+This table represent information about possible criteria: >, >=, =, <=, <
+"""
 class Criterion(CommonInfo):
     pass
 

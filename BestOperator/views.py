@@ -36,17 +36,17 @@ def post_results(request):
         return render(request, 'BestOperator/index.html', context)#TODO HttpResponseRedirect
     else:
         sql = 'select  ' \
-        '    o.name as \'Operator Name\'' \
-        '    , p.name as \'Package\'' \
-        '    , p.description as \'Description\'' \
-        '    , p.price as \'Price\'' \
-        '    ,  p.link as \'URL\'' \
-        '    ,  off.name as \'Offer Name\'' \
-        '    ,  f.id as \'Feature ID\'' \
-        '    ,  s.name as \'Service Name\'' \
-        '    ,  st.name as \'Service Type Name\'' \
-        '    ,  a.name as \'Attribute\'' \
-        '    ,  par.value as \'Value\' ' \
+        '    o.name as oper_name' \
+        '    , p.name as pack_name' \
+        '    , p.description as pack_descr' \
+        '    , p.price as pack_price' \
+        '    ,  p.link as pack_link' \
+        '    ,  off.name as offer_name' \
+        '    ,  f.id as feature_id' \
+        '    ,  s.name as service_name' \
+        '    ,  st.name as st_name' \
+        '    ,  a.name as attr' \
+        '    ,  par.value as val ' \
         'from  ' \
         '    bestoperator_operator o' \
         '    join bestoperator_package p on p.operator_id = o.id' \
@@ -57,7 +57,7 @@ def post_results(request):
         '    left join bestoperator_servicetype st on st.id = s.service_type_id' \
         '    left join bestoperator_param par on par.feature_id = f.id' \
         '    left join bestoperator_attribute a on par.attr_id = a.id'
-        sqlRows = MagicSql(sql).get_results()
+        sqlRows = MagicSql(sql).get_named_tuple()
         # 2) make calculations:
         #   this would be just one multi-table join SQL query
         #       input parameters filtering list will be concatenated as dynamic SQL at runtime just BEFORE script execution.
