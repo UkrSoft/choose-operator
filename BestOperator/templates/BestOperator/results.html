@@ -8,8 +8,13 @@
                 {% endfor %}
             </thead>
             <tbody>
-                <tr><td>Пакет</td>
-                    {% for col in sqlRows|row_data:"pack_name" %}
+                <tr><td>Пакет і посилання</td>
+                    {% for col in sqlRows|row_data:"pack_name, pack_link" %}
+                        <td><a href="{{ col|gv:"pack_link" }}">{{ col|gv:"pack_name" }}</a></td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Пропозиція</td>
+                    {% for col in sqlRows|row_data:"offer_name" %}
                         <td>{{ col }}</td>
                     {% endfor %}
                 </tr>

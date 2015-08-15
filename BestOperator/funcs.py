@@ -37,7 +37,7 @@ class MagicSql:
         if column_names is None:
             return self.get_results()
         tuple_def = namedtuple('Columns', column_names)
-        return map(tuple_def._make, rowset)
+        return list(map(tuple_def._make, rowset))
     def get_results(self):
         rowset = self.rowset
         column_names = self.column_names

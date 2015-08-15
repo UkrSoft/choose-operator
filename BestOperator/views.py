@@ -40,13 +40,13 @@ def post_results(request):
         '    , p.name as pack_name' \
         '    , p.description as pack_descr' \
         '    , p.price as pack_price' \
-        '    ,  p.link as pack_link' \
-        '    ,  off.name as offer_name' \
-        '    ,  f.id as feature_id' \
-        '    ,  s.name as service_name' \
-        '    ,  st.name as st_name' \
-        '    ,  a.name as attr' \
-        '    ,  par.value as val ' \
+        '    , p.link as pack_link' \
+        '    , off.name as offer_name' \
+        '    , f.id as feature_id' \
+        '    , s.name as service_name' \
+        '    , st.name as st_name' \
+        '    , a.name as attr' \
+        '    , par.value as val ' \
         'from  ' \
         '    bestoperator_operator o' \
         '    join bestoperator_package p on p.operator_id = o.id' \
