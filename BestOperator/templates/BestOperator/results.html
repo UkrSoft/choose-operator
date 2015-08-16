@@ -1,11 +1,11 @@
 <html><!--glyphicon glyphicon-bookmark-->
-{% load bestoperator_extras %}
-    <body><h3>SQL DATA:</h3>
+    {% load bestoperator_extras %}
+    <body>
         <table border="1" cellspacing="0">
-            <thead><td>&nbsp</td>
+            <thead><tr><td>&nbsp</td>
                 {% for col in sqlRows|row_data:"oper_name" %}
                     <td>{{ col }}</td>
-                {% endfor %}
+                {% endfor %}</tr>
             </thead>
             <tbody>
                 <tr><td>Пакет і посилання</td>
@@ -13,8 +13,38 @@
                         <td><a href="{{ col|gv:"pack_link" }}">{{ col|gv:"pack_name" }}</a></td>
                     {% endfor %}
                 </tr>
+                <tr><td>Опис</td>
+                    {% for col in sqlRows|row_data:"pack_descr" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Опис</td>
+                    {% for col in sqlRows|row_data:"pack_price" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
                 <tr><td>Пропозиція</td>
                     {% for col in sqlRows|row_data:"offer_name" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Сервіс</td>
+                    {% for col in sqlRows|row_data:"service_name" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Тип сервісу</td>
+                    {% for col in sqlRows|row_data:"st_name" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Тип сервісу</td>
+                    {% for col in sqlRows|row_data:"st_name" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Параметри</td>
+                    {% for col in sqlRows|row_data:"attr" %}
                         <td>{{ col }}</td>
                     {% endfor %}
                 </tr>

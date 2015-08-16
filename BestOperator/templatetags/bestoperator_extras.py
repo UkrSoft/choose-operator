@@ -30,3 +30,7 @@ def get_value(struct, key):
             return struct.get(key)
         return 'gv:key \''+key+'\' doesn\'t exist'
     return 'gv:<unknown type>:'+struct
+
+def get_attr_values(id, type):
+    """Returns attr names and values lined to the given object by given id and object type"""
+    pass

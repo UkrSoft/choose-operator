@@ -1,3 +1,4 @@
-.idea/
 *.pyc
 BestOperator/migrations/
+.idea/misc.xml
+.idea/workspace.xml

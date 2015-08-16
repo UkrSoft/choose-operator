@@ -11,8 +11,8 @@ class MainView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
-        context['operators'] = Operator.objects.all();
-        context['serviceTypes'] = ServiceType.objects.filter(is_displayed=True);
+        context['operators'] = Operator.objects.all()
+        context['serviceTypes'] = ServiceType.objects.filter(is_displayed=True)
         return context
 
 def post_results(request):
@@ -37,13 +37,17 @@ def post_results(request):
     else:
         sql = 'select  ' \
         '    o.name as oper_name' \
+        '    , p.id as pack_id' \
         '    , p.name as pack_name' \
         '    , p.description as pack_descr' \
         '    , p.price as pack_price' \
         '    , p.link as pack_link' \
+        '    , off.id as offer_id' \
         '    , off.name as offer_name' \
         '    , f.id as feature_id' \
+        '    , s.id as service_id' \
         '    , s.name as service_name' \
+        '    , st.id as st_id' \
         '    , st.name as st_name' \
         '    , a.name as attr' \
         '    , par.value as val ' \
