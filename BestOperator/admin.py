@@ -24,14 +24,26 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'feature', 'offer', 'period', 'term_of_usage')
     save_on_top = True
 
+
+class FeatureInline(admin.TabularInline):
+    model = Feature
+    fk_name = 'offer'
+    fieldsets = [(None, {'fields': ['service']}), ]
+    extra = 0
+
+
 class OfferInline(admin.TabularInline):
-    model = Offer.package.through#TODO 'link' field output should be override - it is too high
+    # readonly_fields = ['selflink',]
+    model = Offer.package.through  # TODO 'link' field output should be override - it is too high
+    # fk_name = 'offer'
+    # fieldsets = [(None, {'fields':['selflink', 'offer']}),]
     extra = 0
 
 class PackageInline(admin.TabularInline):
+    readonly_fields = ['selflink',]
     model = Package
     fk_name = 'operator'#TODO 'link' field output should be override - it is too high
-    fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}), ]
+    fieldsets = [(None, {'fields': ['selflink', 'name', 'package_type', 'price', 'link']}), ]
     extra = 0
 
 class LocationAdmin(admin.ModelAdmin):
@@ -71,7 +83,16 @@ class OperatorAdmin(admin.ModelAdmin):
 
 class PackageAdmin(admin.ModelAdmin):
     list_display = ('name','description', 'price', 'operator', 'link')
-    inlines = [OfferInline,]
+    inlines = [OfferInline, ]
+
+
+class OfferAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'link')
+    inlines = [FeatureInline, ]
+
+
+# class FeatureAdmin(admin.ModelAdmin):
+#      list_display = ('name','description', 'link')
 
 class ParamAdmin(admin.ModelAdmin):
     list_display = ('custom_name', 'attr', 'value', 'feature')
@@ -107,7 +128,7 @@ admin.site.register(Package, PackageAdmin)
 admin.site.register(Service, ServicesAdmin)
 admin.site.register(Operator, OperatorAdmin)
 admin.site.register(Feature, FeatureAdmin)
-admin.site.register(Offer)
+admin.site.register(Offer, OfferAdmin)
 admin.site.register(Param, ParamAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Payment, PaymentAdmin)

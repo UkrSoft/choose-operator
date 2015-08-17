@@ -21,7 +21,7 @@ class Code(models.Model):
 
 class Operator(CommonInfo):
     location = models.ForeignKey('Location', verbose_name="Location",
-                                 help_text="Reference to location where this operator provides services.")      #TODO location could me multiple??
+                                 help_text="Reference to location where this operator provides services.")
     link = models.TextField(blank=True, help_text="Link to the site where current operator resides.")
     class Meta:
         unique_together = (("name","location"),)
@@ -35,6 +35,15 @@ class Package(CommonInfo):
     po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null=True, blank=True,
                                 help_text="Time term of package usage/order")
     link = models.TextField(blank=True, help_text="Link to the site with current package")
+
+    def selflink(self):
+        if self.id:
+            return "<a href=\"/admin/BestOperator/package/%s/\">Link</a>" % (str(self.id))
+        else:
+            return "Not present"
+
+    selflink.allow_tags = True
+
     class Meta:
         unique_together = (("name", "operator"),)
 
@@ -45,6 +54,14 @@ class Offer(CommonInfo):
     package = models.ManyToManyField(Package, verbose_name="Package", help_text="Reference to related package")
     po_term = models.ForeignKey('POTerm', verbose_name='Package / Offer Term', help_text="Time term of offer usage/order")
     link = models.TextField(blank=True)
+
+    def selflink(self):
+        if self.id:
+            return "<a href=\"/admin/BestOperator/offer/%s/\">Link</a>" % (str(self.id))
+        else:
+            return "Not present"
+
+    selflink.allow_tags = True
 
 class POTerm(models.Model):
     description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
