@@ -4,15 +4,14 @@ from django.db import models
 
 class CommonInfo(models.Model):
     name = models.CharField(max_length=200, help_text="Name of the current object.")
-    description = models.TextField(blank = True, help_text="Any useful information which may be used to easily operate current object.")
-
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
+    def __str__(self):
+        return self.name
     class Meta:
         abstract = True
 
-    def __str__(self):
-        return self.name
-
 class Code(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     operator_code = models.CharField(max_length=10,
                                      help_text="Operator code - several first digits of phone number for some specific operator")
     operator = models.ForeignKey('Operator', related_name='code',
@@ -21,9 +20,8 @@ class Code(models.Model):
         return self.operator_code
 
 class Operator(CommonInfo):
-    #todo-me: name field should be unique for operator
     location = models.ForeignKey('Location', verbose_name="Location",
-                                 help_text="Reference to location where this operator provides services.")  # could me multiple??
+                                 help_text="Reference to location where this operator provides services.")      #TODO location could me multiple??
     link = models.TextField(blank=True, help_text="Link to the site where current operator resides.")
     class Meta:
         unique_together = (("name","location"),)
@@ -45,52 +43,98 @@ class PackageType(CommonInfo):
 
 class Offer(CommonInfo):
     package = models.ManyToManyField(Package, verbose_name="Package", help_text="Reference to related package")
-    po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', help_text="Time term of offer usage/order")
+    po_term = models.ForeignKey('POTerm', verbose_name='Package / Offer Term', help_text="Time term of offer usage/order")
     link = models.TextField(blank=True)
 
 class POTerm(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     active_from_date = models.DateField(null=True, blank=True, help_text="Package/Offer is in service from this date")
     active_to_date = models.DateField(null=True, blank=True, help_text="Package/Offer is in service this this date")
     order_from_date = models.DateField(null=True, blank=True, help_text="Package/Offer can be bought from this date")
     order_to_date = models.DateField(null=True, blank=True, help_text="Package/Offer can be bought till this date")
-    is_active = models.IntegerField(default=1, help_text="Decision flag. Is in use: 1; Out of use: 0")
+    is_active = models.BooleanField(default=True, help_text="Decision flag. Is in use: 1; Out of use: 0")
     def __str__(self):
-        return 'Active from  %s to %s' % (self.active_from_date, self.active_to_date)
+        res_str = ""
+        if self.is_active:
+            res_str += "Active"
+            if self.active_from_date:
+                if self.active_to_date:
+                    res_str += ' from %s to %s' % (self.active_from_date, self.active_to_date)
+                else:
+                    res_str += ' from %s' % (self.active_from_date)
+            else:
+                res_str += " forever"
+        else:
+            res_str += "Not active"
+        return res_str
+    class Meta:
+        verbose_name = "Package / Offer Term"
+        verbose_name_plural = "Package / Offer Terms"
 
 class Period(CommonInfo):
-    #todo-me: check variant with using DurationField type for resetting period in days
     num_of_days = models.IntegerField("Number of days for period", null=True, blank=True, help_text="Number of day for current period.")
     from_time = models.DateTimeField(null=True, blank=True,
-                                     help_text="Period of time whne Offer/Feature is active. For example: from 01.00")
+                                     help_text="Period of time when Offer/Feature is active. For example: from 01.00")
     to_time = models.DateTimeField(null=True, blank=True,
-                                   help_text="Period of time whne Offer/Feature is active. For example: to 08.00")
+                                   help_text="Period of time when Offer/Feature is active. For example: to 08.00")
 
 class Payment(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     price = models.DecimalField("Price", max_digits=7, decimal_places=2, default=0, help_text="Price of Offer/Feature")
     period = models.ForeignKey('Period', null=True, blank = True, help_text="Reference to Period for current Offer/Feature")
     term_of_usage = models.ForeignKey('TermOfUsage', null=True, blank = True, help_text="Reference to Term Of Usage")
-    #todo-me Ticket:  [DataBase] Add rule for required only one field from couple #38
-    feature = models.ForeignKey('Feature', related_name='payment', null=True, blank=True, help_text="Reference to Feature")
-    offer = models.ForeignKey('Offer', related_name='payment', null=True, blank=True, help_text="Reference to Offer")
+    feature = models.ForeignKey('Feature', null=True, blank=True, help_text="Reference to Feature")
+    offer = models.ForeignKey('Offer', null=True, blank=True, help_text="Reference to Offer")
     def __str__(self):
-        return 'Price of %s:%s for %s period' % (self.offer, self.feature, self.period)
+        ret_str = "Price"
+        if self.offer:
+            ret_str += " of %(offer)s" % {'offer' : self.offer}
+        if self.feature:
+            ret_str += " (%(feature)s)" % {'feature' : self.feature}
+        if self.period:
+            ret_str += " for %(period)s" % {'period' : self.period}
+        return ret_str
 
 """
 This table represents possible terms of using some feature/offer. For example: 10 first minutes for one price, 11 and next minutes have another price
 """
 class TermOfUsage(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
+    #TODO this should be re-written to usage of attributes and units
     amount = models.IntegerField("Amount of minutes/message/Mbits",
                                  help_text="Amount of minutes/message/Mbits that are limited")
     criterion = models.ForeignKey('Criterion', verbose_name="Criterion",
                                   help_text="Criterion related to amount. For example: '<'. It means that such TermOfUsage for amount of min/mes that is < amount(field)")
+    service_type = models.ForeignKey('ServiceType', verbose_name="Service Type", help_text="Service type linked to current term")
     def __str__(self):
-        return 'Term of Usage: %s:%s' % (self.criterion, self.amount)
+        return '%(criterion)s %(amount)s' % {'criterion' : self.criterion, 'amount' : self.amount}
+    class Meta:
+        verbose_name_plural = "Terms of Usage"
+
+class Unit(CommonInfo):
+    unit = models.CharField(max_length=200, verbose_name="Unit", help_text="Units used for measurement")
+    compared_to = models.ForeignKey('self', related_name="linked_unit", null=True, blank=True, verbose_name="Compared to unit", help_text="If compare this unit to another one")
+    multiplier = models.FloatField(blank=True, default=1, verbose_name="Multiply 'compared to unit'", help_text="Multiplier used to compare to values (formula is : compared_to * multiplier = unit)")
+    def __str__(self):
+        return self.unit
+
+"""
+Units suitable for usage by each separate service type
+"""
+class UnitToServiceType(CommonInfo):
+    unit = models.ForeignKey('Unit', verbose_name="Unit", help_text="Units of measure")
+    service_type = models.ForeignKey('ServiceType', verbose_name="Service Type", help_text="Service type linked to current term")
+    def __str__(self):
+        return '%s - %s' % (self.unit, self.service_type)
+    class Meta:
+        verbose_name_plural = "Unit to service type"
 
 """
 This table represent information about possible criteria: >, >=, =, <=, <
 """
 class Criterion(CommonInfo):
-    pass
+    class Meta:
+        verbose_name_plural = "Criteria"
 
 class LocationType(CommonInfo):
     pass
@@ -99,71 +143,96 @@ class Location(CommonInfo):
     included_in = models.ForeignKey('self', null=True, blank=True, verbose_name="Included in Location",
                                     help_text="Reference to Location where current is included in")
     location_type = models.ForeignKey('LocationType', verbose_name="Location Type",
-                                      help_text="Location type: Country, Area, Reqion etc.")
+                                    help_text="Location type: Country, Area, Reqion etc.")
     class Meta:
        unique_together = (("name" ,"included_in"),)
 
-class ServiceType(CommonInfo):
-    pass
-    is_displayed = models.BooleanField(default=False, help_text="Configuration flag.")
-    #todo-me: name field should be unique for operator
-    # def save(self, *args, **kwargs):#TODO you may try overriding this method
-    #         if self.name == "Yoko Ono's blog":
-    #             return # Yoko shall never have her own blog!
-    #         else:
-    #             super(Blog, self).save(*args, **kwargs) # Call the "real" save() method.
+class ServiceType(models.Model):
+    name = models.CharField(max_length=200, unique = True, help_text="Name of the current object.")
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
+    is_displayed = models.BooleanField(default=False, verbose_name="Is Displayed on Main Form", help_text="Specifies whether to display this service type on the user-inout form or not.")
+    def __str__(self):
+        return self.name
 
 class Direction(models.Model):
+    description = models.TextField(blank = True,
+                                    help_text="Any useful information which may be helpful to easily operate current object.")
     from_location = models.ForeignKey('Location', related_name="from_directions", verbose_name="From Location",
-                                      help_text="Location where you use service: call, internet etc.")
+                                    help_text="Location where you use service: call, internet etc.")
     to_location = models.ForeignKey('Location', related_name="to_directions", null=True, blank=True, verbose_name="To Location",
                                     help_text="Location where you make a call, send message etc.")
     to_operator = models.ForeignKey('Operator', verbose_name="To Operarot", null=True, blank=True,
                                     help_text="Destination operator, who will receive call or message")
     def __str__(self):
-        return '%s -> %s (%s)' % (self.from_location, self.to_location, self.to_operator)
+        res_str = "%(from_loc)s" % {'from_loc' : self.from_location}
+        if (self.to_location):
+            res_str += " -> %(to_loc)s" % {'to_loc' : self.to_location}
+        if (self.to_operator):
+            res_str += " (%(to_oper)s)" % {'to_oper' : self.to_operator}
+        return res_str
     class Meta:
-        unique_together = (("from_location","to_location", "to_operator"),)
+        unique_together = (("from_location", "to_location", "to_operator"),)
 
-class Service(CommonInfo):
+class Service(models.Model):#TODO it should be possible to provide default value of name field without duplicating field from the 'CommonInfo' model: http://stackoverflow.com/questions/4904230/django-change-default-value-for-an-extended-model-class
+    name = models.CharField(max_length=200, default="<auto-generated>", help_text="Name of the current object.")
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     service_type = models.ForeignKey('ServiceType', verbose_name="Service Type",
-                                     help_text="Service Type: call, internet, SMS etc.")
+                                     help_text="Service Type: call, SMS, internet etc.")
     direction = models.ForeignKey('Direction', verbose_name="Direction",
-                                  help_text="Direction of the call, sms, internet(just from) etc.")
-    # def save(self, **kwargs):
-    #     if self.name =='1':
-    #         self.name = '%s - %s' % (self.service_type, self.direction)
-    #     super(self).save(**kwargs)
-
+                                  help_text="Direction of the call, SMS, internet etc.")
+    def save(self, *args, **kwargs):
+        if self.name == '<auto-generated>':
+            self.name = '%s - %s' % (self.service_type, self.direction)
+        super(Service, self).save(*args, **kwargs)
+    def __str__(self):
+        return self.name
     class Meta:
         unique_together = (("service_type", "direction"),)
 
-class Feature(models.Model):
-    description = models.TextField(blank = True, help_text="Any useful information which may be used to easily operate current object.")
-    #todo-me Ticket: [DataBase] Add rule for required only one field from couple #38
+class Feature(models.Model):#TODO feature is not linked to operator. WHY?
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     offer = models.ForeignKey(Offer, verbose_name="Offer", null=True, blank=True, help_text="Related Offer")
     package = models.ForeignKey(Package, verbose_name="Package", null=True, blank=True, help_text="Related Package")
     service = models.ForeignKey(Service, verbose_name="Service", help_text="Provided service in scope of this feature")
-    #todo-me Need to change next method. In current example only package or offer will be populated
     def __str__(self):
-        return '%s:%s - %s' % (self.package, self.offer, self.service)
+        res_str = "%(service)s" % {'service' : self.service}
+        if self.offer:
+            res_str += " (offer: %(offer)s" % {'offer' : self.offer}
+        if self.package:
+            res_str += " " if self.offer else " ("
+            res_str += "package: %(package)s " % {'package' : self.package}
+        if self.offer or self.package:
+            res_str += ")"
+        return res_str
     class Meta:
-        unique_together = (("offer","service"),)
+        unique_together = (("offer", "service"),)
 
 class Attribute(CommonInfo):
     service_type = models.ForeignKey(ServiceType, verbose_name="Service Type",
                                      help_text="Service Type that can have such attribute")
     class Meta:
-        unique_together = (("service_type","name"),)
+        unique_together = (("service_type", "name"),)
 
 class Param(models.Model):
+    description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     attr = models.ForeignKey(Attribute, verbose_name="Attribute", help_text="Reference to Attribute")
     value = models.CharField(max_length=500, null = True, blank=True, help_text="Value of parameter")
-    feature = models.ForeignKey('Feature', verbose_name="Feature", help_text="Reference to Feature" )
+    feature = models.ForeignKey('Feature', verbose_name="Feature", help_text="Reference to Feature" )#TODO think why the feature is here?? maybe create separate table for mapping to diff entities
     def __str__(self):
-        return self.attr.name
+        ret_str = "%(attr)s" % {'attr' : self.attr}
+        if self.value:
+            ret_str += " = %(val)s" % {'val' : self.value}
+        return ret_str
+    def custom_name(self):
+        return "%(feature)s - %(str)s" % {'feature' : self.feature, 'str' : self.__str__()}
+    # custom_name.short_description = 'Parameter Name' #TODO set correct name
+    class Meta:
+        verbose_name = "Parameter"
+        verbose_name_plural = "Parameters"
 
 class Directory(models.Model):
     key = models.CharField(max_length=200, help_text="Name of the key")
     value = models.TextField(help_text="Value of current key")
     changed_date = models.DateTimeField(auto_now=True, help_text="Date when current key was changed last time")
+    class Meta:
+        verbose_name_plural = "Directories"

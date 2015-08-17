@@ -3,8 +3,10 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+
 from BestOperator.funcs import MagicSql
 from BestOperator.models import Operator, ServiceType
+
 
 class MainView(TemplateView):
     template_name = "BestOperator/index.html"
@@ -37,30 +39,30 @@ def post_results(request):
     else:
         sql = 'select  ' \
         '    o.name as oper_name' \
+        '    , o.link as oper_link' \
         '    , p.id as pack_id' \
         '    , p.name as pack_name' \
         '    , p.description as pack_descr' \
-        '    , p.price as pack_price' \
+        '    , round(p.price, 0) as pack_price' \
         '    , p.link as pack_link' \
-        '    , off.id as offer_id' \
+        '    , pf.id as pack_feature_id' \
+        '    , ps.name as pack_service_name' \
+        '    , pst.name as pack_service_type' \
         '    , off.name as offer_name' \
-        '    , f.id as feature_id' \
-        '    , s.id as service_id' \
         '    , s.name as service_name' \
-        '    , st.id as st_id' \
         '    , st.name as st_name' \
-        '    , a.name as attr' \
-        '    , par.value as val ' \
-        'from  ' \
+        ' from  ' \
         '    bestoperator_operator o' \
         '    join bestoperator_package p on p.operator_id = o.id' \
-        '    left join bestoperator_feature f on f.package_id = p.id' \
-        '    left join bestoperator_offer off on f.offer_id = off.id' \
-        '    left join bestoperator_offer_package_id oftp on oftp.package_id = p.id and oftp.offer_id = off.id' \
+        '    left join bestoperator_feature pf on pf.package_id = p.id' \
+        '    left join bestoperator_service ps on pf.service_id = ps.id' \
+        '    left join bestoperator_servicetype pst on pst.id = ps.service_type_id' \
+        '    left join bestoperator_offer_package oftp on oftp.package_id = p.id' \
+        '    left join bestoperator_offer off on oftp.offer_id = off.id' \
+        '    left join bestoperator_feature f on f.offer_id = off.id' \
         '    left join bestoperator_service s on f.service_id = s.id' \
         '    left join bestoperator_servicetype st on st.id = s.service_type_id' \
-        '    left join bestoperator_param par on par.feature_id = f.id' \
-        '    left join bestoperator_attribute a on par.attr_id = a.id'
+        ' order by o.name, p.name'
         sqlRows = MagicSql(sql).get_named_tuple()
         # 2) make calculations:
         #   this would be just one multi-table join SQL query

@@ -3,8 +3,8 @@
     <body>
         <table border="1" cellspacing="0">
             <thead><tr><td>&nbsp</td>
-                {% for col in sqlRows|row_data:"oper_name" %}
-                    <td>{{ col }}</td>
+                {% for col in sqlRows|row_data:"oper_name, oper_link" %}
+                    <td><a href="{{ col|gv:"oper_link" }}">{{ col|gv:"oper_name" }}</a></td>
                 {% endfor %}</tr>
             </thead>
             <tbody>
@@ -18,8 +18,23 @@
                         <td>{{ col }}</td>
                     {% endfor %}
                 </tr>
-                <tr><td>Опис</td>
+                <tr><td>Ціна</td>
                     {% for col in sqlRows|row_data:"pack_price" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Ціна</td>
+                    {% for col in sqlRows|row_data:"pack_feature_id" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Послуга пакета</td>
+                    {% for col in sqlRows|row_data:"pack_service_name" %}
+                        <td>{{ col }}</td>
+                    {% endfor %}
+                </tr>
+                <tr><td>Тип послуги пакету</td>
+                    {% for col in sqlRows|row_data:"pack_service_type" %}
                         <td>{{ col }}</td>
                     {% endfor %}
                 </tr>
@@ -38,17 +53,13 @@
                         <td>{{ col }}</td>
                     {% endfor %}
                 </tr>
-                <tr><td>Тип сервісу</td>
-                    {% for col in sqlRows|row_data:"st_name" %}
-                        <td>{{ col }}</td>
-                    {% endfor %}
-                </tr>
-                <tr><td>Параметри</td>
-                    {% for col in sqlRows|row_data:"attr" %}
-                        <td>{{ col }}</td>
-                    {% endfor %}
-                </tr>
             </tbody>
         </table>
+        <h1>SQL DATA:</h1>
+    <table border="1">
+        {% for row in sqlRows %}<tr>
+            {% for col in row %}<td>{{ col }}</td>
+            {% endfor %}</tr>
+        {% endfor %}</table>
     </body>
 </html>
