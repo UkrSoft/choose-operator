@@ -1,3 +1,3 @@
 @echo off
-python manage.py runserver 0.0.0.0:81
+python manage.py runserver localhost:80
 pause

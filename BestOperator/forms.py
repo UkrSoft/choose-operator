@@ -1,8 +1,14 @@
 from django import forms
 from django.forms import models
+from BestOperator.models import Offer, Package, Service, Feature, Payment, \
+    EmptyModel
 
-from BestOperator.models import Offer, Package, Service, Feature, Payment
 
+class DescriptionForm(forms.ModelForm):
+    link = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows':2, 'cols':80}))
+    class Meta:
+        model = EmptyModel
+        fields = models.ALL_FIELDS
 
 class FeatureForm(forms.ModelForm):#TODO why help text is not displayed in the form?
     offer = forms.ModelChoiceField(queryset=Offer.objects.all(), required=False)
@@ -36,3 +42,7 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = models.ALL_FIELDS
+
+class OfferForm(DescriptionForm):
+    package = forms.ModelMultipleChoiceField(queryset=Package.objects.all(), required=True,
+                                             widget=forms.CheckboxSelectMultiple)

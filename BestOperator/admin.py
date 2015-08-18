@@ -1,9 +1,21 @@
 from django.contrib import admin
 
-from BestOperator.forms import FeatureForm, PaymentForm
+from BestOperator.forms import FeatureForm, PaymentForm, OfferForm, \
+    DescriptionForm
 from .models import *
 
 __author__ = 'Kostiantyn Bezverkhyi'
+
+class OfferAdmin(admin.ModelAdmin):
+    form = OfferForm
+    # filter_horizontal = ('package', )
+    list_display = ('name', 'packages', 'po_term')
+    fieldsets = [
+        (None,                {'fields': [('name', 'link', ), ]}),
+        ('Linkage',           {'fields': [('package', 'po_term'), ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    save_on_top = True
 
 class FeatureAdmin(admin.ModelAdmin):
     form = FeatureForm
@@ -20,17 +32,29 @@ class PaymentAdmin(admin.ModelAdmin):
         (None,                {'fields': [('feature', 'offer'), ]}),
         ('Pricing options',   {'fields': [('period', 'price'), 'term_of_usage']}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
-    ]#TODO set custom name for the __str__ field in the admin
-    list_display = ('__str__', 'feature', 'offer', 'period', 'term_of_usage')
+    ]
     save_on_top = True
+    list_display = ('name', 'feature', 'offer', 'period', 'term_of_usage')
+    def name(self, instance):
+        return instance.__str__()
+    name.short_description = 'Name'
 
-class OfferInline(admin.TabularInline):
-    model = Offer.package.through#TODO 'link' field output should be override - it is too high
+class PackageOfferInline(admin.TabularInline):
+    form = DescriptionForm
+    show_change_link = True
+    model = Offer.package.through
+    readonly_fields = ['terms', 'url']
+    def url(self, instance):
+        return instance.offer.get_absolute_url_link()
+    def terms(self, instance):
+        return instance.offer.po_term
     extra = 0
 
-class PackageInline(admin.TabularInline):
+class OperatorPackageInline(admin.TabularInline):
+    form = DescriptionForm
+    show_change_link = True
     model = Package
-    fk_name = 'operator'#TODO 'link' field output should be override - it is too high
+    fk_name = 'operator'
     fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}), ]
     extra = 0
 
@@ -60,44 +84,75 @@ class ServicesAdmin(admin.ModelAdmin):
     save_on_top = True
 
 class OperatorAdmin(admin.ModelAdmin):
+    form = DescriptionForm
     list_display = ('name', 'location', 'description')
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
-        ('Reference Info',    {'fields': [('location', ), ]}),
+        ('Location Info',     {'fields': [('location', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
-    inlines = [PackageInline,]
+    inlines = [OperatorPackageInline,]
     save_on_top = True
 
 class PackageAdmin(admin.ModelAdmin):
-    list_display = ('name','description', 'price', 'operator', 'link')
-    inlines = [OfferInline,]
+    form = DescriptionForm
+    list_display = ('name', 'description', 'operator', 'package_type', 'po_term', 'price')
+    fieldsets = [
+        (None,                {'fields': [('name', 'link')]}),
+        ('Operator Info',     {'fields': [('operator', 'package_type', ), ]}),
+        ('Payment Info',      {'fields': [('po_term', 'price', ), ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    inlines = [PackageOfferInline,]
+    save_on_top = True
 
 class ParamAdmin(admin.ModelAdmin):
-    list_display = ('custom_name', 'attr', 'value', 'feature')
+    list_display = ('name', 'attr', 'value', 'feature')
     fieldsets = [
         (None,                {'fields': [('attr', 'value'), ]}),
-        ('Reference Info',    {'fields': [('feature', ), ]}),
+        ('Linked to',         {'fields': [('feature', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
     inline = [DirectionsInline]
+    save_on_top = True
+
+class TermsOfUsageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'criterion', 'amount', 'unit')
+    fieldsets = [
+        (None,                {'fields': [('criterion', 'amount', 'unit'), ]}),
+        ('Linked to',         {'fields': ['service_type', ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    save_on_top = True
+
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'service_type', 'unit')
+    fieldsets = [
+        (None,                {'fields': [('service_type', 'name', 'unit'), ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
     save_on_top = True
 
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('unit', 'compared_to', 'multiplier')
     fieldsets = [
         (None,                {'fields': [('name', 'unit'), ]}),
-        ('Reference Info',    {'fields': [('compared_to', 'multiplier'), ]}),
+        ('Self reference',    {'fields': [('compared_to', 'multiplier'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
     inline = [DirectionsInline]
     save_on_top = True
 
+class CriterionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    fieldsets = [
+        (None,                {'fields': [('name', ), ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    save_on_top = True
+
 class CodeAdmin(admin.ModelAdmin):
     list_display = ('operator_code', 'operator')
-
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'service_type')
 
 # todo-me: create customized representations of Offers-Features and Features-Params
 admin.site.register(Direction)
@@ -107,14 +162,14 @@ admin.site.register(Package, PackageAdmin)
 admin.site.register(Service, ServicesAdmin)
 admin.site.register(Operator, OperatorAdmin)
 admin.site.register(Feature, FeatureAdmin)
-admin.site.register(Offer)
+admin.site.register(Offer, OfferAdmin)
 admin.site.register(Param, ParamAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(Period)
 admin.site.register(POTerm)
-admin.site.register(Criterion)
-admin.site.register(TermOfUsage)
+admin.site.register(Criterion, CriterionAdmin)
+admin.site.register(TermOfUsage, TermsOfUsageAdmin)#TODO is not displayed
 admin.site.register(LocationType)
 admin.site.register(PackageType)
 admin.site.register(Directory)
