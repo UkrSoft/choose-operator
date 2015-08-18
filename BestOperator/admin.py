@@ -1,27 +1,50 @@
 from django.contrib import admin
 
 from BestOperator.forms import FeatureForm, PaymentForm, OfferForm, \
-    DescriptionForm
+    SmallLinkForm
 from .models import *
 
 __author__ = 'Kostiantyn Bezverkhyi'
 
+class FeatureInline(admin.TabularInline):
+    model = Feature
+    fk_name = 'offer'
+    fieldsets = [(None, {'fields': ['service']}), ]
+    extra = 0
+
+class PackageOfferInline(admin.TabularInline):
+    model = Offer.package.through
+    readonly_fields = ['terms', 'url']
+    def url(self, instance):
+        return instance.offer.get_absolute_url_link()
+    def terms(self, instance):
+        return instance.offer.po_term
+    extra = 0
+
+class OperatorPackageInline(admin.TabularInline):
+    form = SmallLinkForm
+    show_change_link = True
+    model = Package
+    fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}), ]
+    extra = 0
+
 class OfferAdmin(admin.ModelAdmin):
     form = OfferForm
-    # filter_horizontal = ('package', )
+    filter_horizontal = ('package', )
     list_display = ('name', 'packages', 'po_term')
     fieldsets = [
         (None,                {'fields': [('name', 'link', ), ]}),
-        ('Linkage',           {'fields': [('package', 'po_term'), ]}),
+        ('Linked to',           {'fields': [('package', 'po_term'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
+    inlines = [FeatureInline, ]
     save_on_top = True
 
 class FeatureAdmin(admin.ModelAdmin):
     form = FeatureForm
     fieldsets = [
         (None,                {'fields': [('service',), ]}),
-        ('Linkage',           {'fields': [('package', 'offer'), ]}),
+        ('Linked to',           {'fields': [('package', 'offer'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
     save_on_top = True
@@ -39,32 +62,14 @@ class PaymentAdmin(admin.ModelAdmin):
         return instance.__str__()
     name.short_description = 'Name'
 
-
-class FeatureInline(admin.TabularInline):
-    model = Feature
-    fk_name = 'offer'
-    fieldsets = [(None, {'fields': ['service']}), ]
-    extra = 0
-
-class PackageOfferInline(admin.TabularInline):
-    form = DescriptionForm
-    show_change_link = True
-    model = Offer.package.through
-    readonly_fields = ['terms', 'url']
-    def url(self, instance):
-        return instance.offer.get_absolute_url_link()
-    def terms(self, instance):
-        return instance.offer.po_term
-    extra = 0
-
-class OperatorPackageInline(admin.TabularInline):
-    form = DescriptionForm
-    show_change_link = True
-    readonly_fields = ['selflink',]
-    model = Package
-    fk_name = 'operator'
-    fieldsets = [(None, {'fields': ['selflink', 'name', 'package_type', 'price', 'link']}), ]
-    extra = 0
+class PeriodAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None,                {'fields': [('name', 'num_of_days'), ]}),
+        ('Periods',           {'fields': [('from_time', 'to_time'),]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    list_display = ('name', 'num_of_days', 'from_time', 'to_time')
+    save_on_top = True
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'included_in')
@@ -92,7 +97,7 @@ class ServicesAdmin(admin.ModelAdmin):
     save_on_top = True
 
 class OperatorAdmin(admin.ModelAdmin):
-    form = DescriptionForm
+    form = SmallLinkForm
     list_display = ('name', 'location', 'description')
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
@@ -103,7 +108,7 @@ class OperatorAdmin(admin.ModelAdmin):
     save_on_top = True
 
 class PackageAdmin(admin.ModelAdmin):
-    form = DescriptionForm
+    form = SmallLinkForm
     list_display = ('name', 'description', 'operator', 'package_type', 'po_term', 'price')
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
@@ -113,12 +118,6 @@ class PackageAdmin(admin.ModelAdmin):
     ]
     inlines = [PackageOfferInline,]
     save_on_top = True
-
-
-class OfferAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'link')
-    inlines = [FeatureInline, ]
-
 
 # class FeatureAdmin(admin.ModelAdmin):
 #      list_display = ('name','description', 'link')
@@ -168,11 +167,20 @@ class CriterionAdmin(admin.ModelAdmin):
     ]
     save_on_top = True
 
+class DirectionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'from_location', 'to_location', 'to_operator')
+    fieldsets = [
+        (None,                {'fields': [('from_location', 'to_location', ), ]}),
+        ('Linked to',    {'fields': [('to_operator', ), ]}),
+        ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
+    ]
+    save_on_top = True
+
 class CodeAdmin(admin.ModelAdmin):
     list_display = ('operator_code', 'operator')
 
 # todo-me: create customized representations of Offers-Features and Features-Params
-admin.site.register(Direction)
+admin.site.register(Direction, DirectionAdmin)
 admin.site.register(ServiceType,ServiceTypeAdmin)
 admin.site.register(Location,LocationAdmin)
 admin.site.register(Package, PackageAdmin)
@@ -183,7 +191,7 @@ admin.site.register(Offer, OfferAdmin)
 admin.site.register(Param, ParamAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Payment, PaymentAdmin)
-admin.site.register(Period)
+admin.site.register(Period, PeriodAdmin)
 admin.site.register(POTerm)
 admin.site.register(Criterion, CriterionAdmin)
 admin.site.register(TermOfUsage, TermsOfUsageAdmin)#TODO is not displayed

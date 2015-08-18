@@ -10,21 +10,22 @@ class EmptyModel(models.Model):
     description = models.TextField(blank = True, help_text="Any useful information which may be helpful to easily operate current object.")
     class Meta:
         abstract = True
-    # def get_admin_url(self):
-    #     """
-    #     Returns the admin URL to edit the object represented by this log entry.
-    #     """
-    #     if self._meta.app_label and self._meta.model_name:
-    #         info = (self._meta.app_label, self._meta.model_name)
-    #         try:
-    #             return reverse('admin:%s_%s_change' % info, args=(self.pk,))
-    #         except NoReverseMatch:
-    #             pass
-    #     return None
-    # def get_absolute_url(self):
-    #     return 'http://' + get_absolute_url() + self.get_admin_url()
-    # def get_absolute_url_link(self):
-    #     return mark_safe("<a href='%(link)s'>Click me!</a>" % {'link' : self.get_absolute_url()})
+    def get_admin_url(self):
+        """
+        Returns the admin URL to edit the object represented by this log entry.
+        """
+        if self._meta.app_label and self._meta.model_name:
+            info = (self._meta.app_label, self._meta.model_name)
+            try:
+                return reverse('admin:%s_%s_change' % info, args=(self.pk,))
+            except NoReverseMatch:
+                pass
+        return None
+    def get_absolute_url(self):
+        return self.get_admin_url()#'http://' + get_absolute_url() + self.get_admin_url()
+    def get_absolute_url_link(self):
+        return mark_safe("<a href='%(link)s'>Click me!</a>" % {'link' : self.get_absolute_url()})
+    get_absolute_url_link.short_name = 'URL'
 
 class CommonInfo(EmptyModel):
     name = models.CharField(max_length=200, help_text="Name of the current object.")
@@ -58,14 +59,6 @@ class Package(CommonInfo):
                                 help_text="Time term of package usage/order")
     link = models.TextField(blank=True, help_text="Link to the site with current package")
 
-    def selflink(self):
-        if self.id:
-            return "<a href=\"/admin/BestOperator/package/%s/\">Link</a>" % (str(self.id))
-        else:
-            return "Not present"
-
-    selflink.allow_tags = True
-
     class Meta:
         unique_together = (("name", "operator"),)
 
@@ -73,7 +66,7 @@ class PackageType(CommonInfo):
     pass
 
 class Offer(CommonInfo):
-    package = models.ManyToManyField(Package, verbose_name="Package", help_text="Reference to related package")
+    package = models.ManyToManyField('Package', verbose_name="Package", help_text="Reference to related package")
     po_term = models.ForeignKey('POTerm', verbose_name='Package / Offer Term', help_text="Time term of offer usage/order")
     link = models.TextField(blank=True)
     def packages(self):
@@ -84,7 +77,7 @@ class POTerm(EmptyModel):
     active_to_date = models.DateField(null=True, blank=True, verbose_name="Active to", help_text="Package/Offer is in service this this date")
     order_from_date = models.DateField(null=True, blank=True, verbose_name="Order from", help_text="Package/Offer can be bought from this date")
     order_to_date = models.DateField(null=True, blank=True, verbose_name="Order to", help_text="Package/Offer can be bought till this date")
-    is_active = models.BooleanField(default=True, help_text="Is this term in use or not")
+    is_active = models.BooleanField(default=True, help_text="Whether this term is in use or not")
     def __str__(self):
         res_str = ""
         if self.is_active:
@@ -146,7 +139,7 @@ class TermOfUsage(EmptyModel):
 class Unit(CommonInfo):
     unit = models.CharField(max_length=200, verbose_name="Unit", help_text="Units used for measurement")
     compared_to = models.ForeignKey('self', related_name="linked_unit", null=True, blank=True, verbose_name="Compared to unit", help_text="If compare this unit to another one")
-    multiplier = models.FloatField(blank=True, default=1, verbose_name="Multiply 'compared to unit'", help_text="Multiplier used to compare to values (formula is : compared_to * multiplier = unit)")
+    multiplier = models.FloatField(default=1, verbose_name="Multiply 'compared to unit'", help_text="Multiplier used to compare to values (formula is : compared_to * multiplier = unit)")
     def __str__(self):
         return self.unit
 
@@ -179,7 +172,7 @@ class Location(CommonInfo):
     location_type = models.ForeignKey('LocationType', verbose_name="Location Type",
                                     help_text="Location type: Country, Area, Reqion etc.")
     class Meta:
-       unique_together = (("name" ,"included_in"),)
+       unique_together = (("name", "included_in"),)
 
 class ServiceType(EmptyModel):
     name = models.CharField(max_length=200, unique = True, help_text="Name of the current object.")
@@ -192,7 +185,7 @@ class Direction(EmptyModel):
                                     help_text="Location where you use service: call, internet etc.")
     to_location = models.ForeignKey('Location', related_name="to_directions", null=True, blank=True, verbose_name="To Location",
                                     help_text="Location where you make a call, send message etc.")
-    to_operator = models.ForeignKey('Operator', verbose_name="To Operarot", null=True, blank=True,
+    to_operator = models.ForeignKey('Operator', verbose_name="To Operator", null=True, blank=True,
                                     help_text="Destination operator, who will receive call or message")
     def __str__(self):
         res_str = "%(from_loc)s" % {'from_loc' : self.from_location}
@@ -201,6 +194,8 @@ class Direction(EmptyModel):
         if (self.to_operator):
             res_str += " (%(to_oper)s)" % {'to_oper' : self.to_operator}
         return res_str
+    def name(self):
+        return self.__str__()
     class Meta:
         unique_together = (("from_location", "to_location", "to_operator"),)
 
@@ -220,9 +215,9 @@ class Service(EmptyModel):#TODO it should be possible to provide default value o
         unique_together = (("service_type", "direction"),)
 
 class Feature(EmptyModel):
-    offer = models.ForeignKey(Offer, verbose_name="Offer", null=True, blank=True, help_text="Related Offer")
-    package = models.ForeignKey(Package, verbose_name="Package", null=True, blank=True, help_text="Related Package")
-    service = models.ForeignKey(Service, verbose_name="Service", help_text="Provided service in scope of this feature")
+    offer = models.ForeignKey('Offer', verbose_name="Offer", null=True, blank=True, help_text="Related Offer")
+    package = models.ForeignKey('Package', verbose_name="Package", null=True, blank=True, help_text="Related Package")
+    service = models.ForeignKey('Service', verbose_name="Service", help_text="Provided service in scope of this feature")
     def __str__(self):
         res_str = "%(service)s" % {'service' : self.service}
         if self.offer:
@@ -237,14 +232,14 @@ class Feature(EmptyModel):
         unique_together = (("offer", "service"),)
 
 class Attribute(CommonInfo):
-    service_type = models.ForeignKey(ServiceType, verbose_name="Service Type",
+    service_type = models.ForeignKey('ServiceType', verbose_name="Service Type",
                                      help_text="Service Type that can have such attribute")
     unit = models.ForeignKey('Unit', help_text="Measurement units linked with current attribute")
     class Meta:
         unique_together = (("service_type", "name"),)
 
 class Param(EmptyModel):
-    attr = models.ForeignKey(Attribute, verbose_name="Attribute", help_text="Reference to Attribute")
+    attr = models.ForeignKey('Attribute', verbose_name="Attribute", help_text="Reference to Attribute")
     value = models.CharField(max_length=500, null = True, blank=True, help_text="Value of parameter")
     feature = models.ForeignKey('Feature', verbose_name="Feature", help_text="Reference to Feature" )
     def __str__(self):

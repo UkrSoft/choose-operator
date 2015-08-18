@@ -4,7 +4,7 @@ from BestOperator.models import Offer, Package, Service, Feature, Payment, \
     EmptyModel
 
 
-class DescriptionForm(forms.ModelForm):
+class SmallLinkForm(forms.ModelForm):
     link = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows':2, 'cols':80}))
     class Meta:
         model = EmptyModel
@@ -43,6 +43,6 @@ class PaymentForm(forms.ModelForm):
         model = Payment
         fields = models.ALL_FIELDS
 
-class OfferForm(DescriptionForm):
+class OfferForm(SmallLinkForm):
     package = forms.ModelMultipleChoiceField(queryset=Package.objects.all(), required=True,
                                              widget=forms.CheckboxSelectMultiple)
