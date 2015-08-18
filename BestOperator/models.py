@@ -57,6 +57,15 @@ class Package(CommonInfo):
     po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null=True, blank=True,
                                 help_text="Time term of package usage/order")
     link = models.TextField(blank=True, help_text="Link to the site with current package")
+
+    def selflink(self):
+        if self.id:
+            return "<a href=\"/admin/BestOperator/package/%s/\">Link</a>" % (str(self.id))
+        else:
+            return "Not present"
+
+    selflink.allow_tags = True
+
     class Meta:
         unique_together = (("name", "operator"),)
 

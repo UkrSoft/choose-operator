@@ -39,6 +39,13 @@ class PaymentAdmin(admin.ModelAdmin):
         return instance.__str__()
     name.short_description = 'Name'
 
+
+class FeatureInline(admin.TabularInline):
+    model = Feature
+    fk_name = 'offer'
+    fieldsets = [(None, {'fields': ['service']}), ]
+    extra = 0
+
 class PackageOfferInline(admin.TabularInline):
     form = DescriptionForm
     show_change_link = True
@@ -53,9 +60,10 @@ class PackageOfferInline(admin.TabularInline):
 class OperatorPackageInline(admin.TabularInline):
     form = DescriptionForm
     show_change_link = True
+    readonly_fields = ['selflink',]
     model = Package
     fk_name = 'operator'
-    fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}), ]
+    fieldsets = [(None, {'fields': ['selflink', 'name', 'package_type', 'price', 'link']}), ]
     extra = 0
 
 class LocationAdmin(admin.ModelAdmin):
@@ -105,6 +113,15 @@ class PackageAdmin(admin.ModelAdmin):
     ]
     inlines = [PackageOfferInline,]
     save_on_top = True
+
+
+class OfferAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'link')
+    inlines = [FeatureInline, ]
+
+
+# class FeatureAdmin(admin.ModelAdmin):
+#      list_display = ('name','description', 'link')
 
 class ParamAdmin(admin.ModelAdmin):
     list_display = ('name', 'attr', 'value', 'feature')
