@@ -10,7 +10,7 @@ class SmallLinkForm(forms.ModelForm):
         model = EmptyModel
         fields = models.ALL_FIELDS
 
-class FeatureForm(forms.ModelForm):#TODO why help text is not displayed in the form?
+class FeatureForm(forms.ModelForm):#TODO why help text/create/edit links are not displayed in the form?
     offer = forms.ModelChoiceField(queryset=Offer.objects.all(), required=False)
     package = forms.ModelChoiceField(queryset=Package.objects.all(), required=False)
     service = forms.ModelChoiceField(queryset=Service.objects.all()) #TODO this field was added to add custom widget to admin in the future
@@ -42,7 +42,3 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = models.ALL_FIELDS
-
-class OfferForm(SmallLinkForm):
-    package = forms.ModelMultipleChoiceField(queryset=Package.objects.all(), required=True,
-                                             widget=forms.CheckboxSelectMultiple)

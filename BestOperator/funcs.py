@@ -2,8 +2,18 @@ from collections import namedtuple
 from django.contrib.sites.models import Site
 from django.db import connection
 
-def get_absolute_url():
-    return Site.objects.get_current().domain
+# def get_absolute_url():
+#     return Site.objects.get_current().domain
+
+def get_editable_fields(model, supposed_fields):
+    fields = []
+    for field in model._meta.get_fields():
+        if (not field.many_to_many and field.editable and field.name in supposed_fields):
+            fields.append(field.name)
+    return fields
+
+def expand_list_both_sides(my_list, append_start, append_end):
+    return append_start+my_list+append_end
 
 class MagicSql:
     """

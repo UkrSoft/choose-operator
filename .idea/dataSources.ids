@@ -520,7 +520,7 @@
       <column name="name" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12"/>
       <column name="description" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="false" jdbcType="-1"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <exported-key name="BestOperat_criterion_id_id_74d5f395_fk_BestOperator_criterion_id" table="bestoperator_termofusage" schema="" catalog="bestoperator" columns="criterion_id"/>
+      <exported-key name="BestOperator__criterion_id_44930947_fk_BestOperator_criterion_id" table="bestoperator_termofusage" schema="" catalog="bestoperator" columns="criterion_id"/>
     </table>
     <table name="bestoperator_direction" schema="" catalog="bestoperator" type="TABLE">
       <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
@@ -531,7 +531,7 @@
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="BestOpe_from_location_id_id_15dc3d2e_fk_BestOperator_location_id" columns="from_location_id" ref-table="bestoperator_location" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="BestOperator_to_location_id_43bc458b_fk_BestOperator_location_id" columns="to_location_id" ref-table="bestoperator_location" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="BestOperator_to_operator_id_686ed1fa_fk_BestOperator_operator_id" columns="to_operator_id" ref-table="bestoperator_operator" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="BestOperator_to_operator_id_2a3c12d9_fk_BestOperator_operator_id" columns="to_operator_id" ref-table="bestoperator_operator" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="BestOperator__direction_id_641b257a_fk_BestOperator_direction_id" table="bestoperator_service" schema="" catalog="bestoperator" columns="direction_id"/>
       <index name="BestOperator_direction_from_location_id_1689a9af_uniq" unique="true" columns="from_location_id,to_location_id,to_operator_id"/>
       <index name="BestOpera_to_location_id_id_2a7fd4b1_fk_BestOperator_location_id" unique="false" columns="to_location_id"/>
@@ -543,6 +543,10 @@
       <column name="key" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12"/>
       <column name="value" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="false" jdbcType="-1"/>
       <column name="changed_date" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="bestoperator_emptymodel" schema="" catalog="bestoperator" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <primary-key name="PRIMARY" columns="id"/>
     </table>
     <table name="bestoperator_feature" schema="" catalog="bestoperator" type="TABLE">
@@ -616,7 +620,7 @@
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="BestOperator_location_id_id_352cd513_fk_BestOperator_location_id" columns="location_id" ref-table="bestoperator_location" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="BestOperator__operator_id_id_8110126_fk_BestOperator_operator_id" table="bestoperator_code" schema="" catalog="bestoperator" columns="operator_id"/>
-      <exported-key name="BestOperator_to_operator_id_686ed1fa_fk_BestOperator_operator_id" table="bestoperator_direction" schema="" catalog="bestoperator" columns="to_operator_id"/>
+      <exported-key name="BestOperator_to_operator_id_2a3c12d9_fk_BestOperator_operator_id" table="bestoperator_direction" schema="" catalog="bestoperator" columns="to_operator_id"/>
       <exported-key name="BestOperator_operator_id_id_2d74dbca_fk_BestOperator_operator_id" table="bestoperator_package" schema="" catalog="bestoperator" columns="operator_id"/>
       <index name="name" unique="true" columns="name,location_id"/>
       <index name="BestOperator_location_id_id_503d81e3_fk_BestOperator_location_id" unique="false" columns="location_id"/>
@@ -731,8 +735,8 @@
       <column name="service_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <column name="unit_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <foreign-key name="BestOperat_criterion_id_id_74d5f395_fk_BestOperator_criterion_id" columns="criterion_id" ref-table="bestoperator_criterion" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="BestOperator_termofusage_unit_id_b2bb3c3_fk_BestOperator_unit_id" columns="unit_id" ref-table="bestoperator_unit" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="BestOperator__criterion_id_44930947_fk_BestOperator_criterion_id" columns="criterion_id" ref-table="bestoperator_criterion" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="BestOperator_termofusag_unit_id_30f2a632_fk_BestOperator_unit_id" columns="unit_id" ref-table="bestoperator_unit" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="BestOpe_term_of_usage_id_53ed68cf_fk_BestOperator_termofusage_id" table="bestoperator_payment" schema="" catalog="bestoperator" columns="term_of_usage_id"/>
       <index name="BestOperat_criterion_id_id_74d5f395_fk_BestOperator_criterion_id" unique="false" columns="criterion_id"/>
       <index name="BestOperator_termofusage_8f1d2d79" unique="false" columns="service_type_id"/>
@@ -748,7 +752,7 @@
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="BestOperator_uni_compared_to_id_65ee1df9_fk_BestOperator_unit_id" columns="compared_to_id" ref-table="bestoperator_unit" ref-schema="" ref-catalog="bestoperator" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="BestOperator_attribute_unit_id_8d4e88f_fk_BestOperator_unit_id" table="bestoperator_attribute" schema="" catalog="bestoperator" columns="unit_id"/>
-      <exported-key name="BestOperator_termofusage_unit_id_b2bb3c3_fk_BestOperator_unit_id" table="bestoperator_termofusage" schema="" catalog="bestoperator" columns="unit_id"/>
+      <exported-key name="BestOperator_termofusag_unit_id_30f2a632_fk_BestOperator_unit_id" table="bestoperator_termofusage" schema="" catalog="bestoperator" columns="unit_id"/>
       <exported-key name="BestOperator_uni_compared_to_id_65ee1df9_fk_BestOperator_unit_id" table="bestoperator_unit" schema="" catalog="bestoperator" columns="compared_to_id"/>
       <index name="BestOperator_unit_6f1b6827" unique="false" columns="compared_to_id"/>
     </table>
@@ -797,6 +801,12 @@
       <column name="expire_date" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="session_key"/>
       <index name="django_session_de54fa62" unique="false" columns="expire_date"/>
+    </table>
+    <table name="django_site" schema="" catalog="bestoperator" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="domain" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="name" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id"/>
     </table>
   </data-source>
 </component>

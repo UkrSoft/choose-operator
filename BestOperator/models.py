@@ -1,6 +1,6 @@
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.safestring import mark_safe
-from BestOperator.funcs import get_absolute_url
+# from BestOperator.funcs import get_absolute_url
 
 __author__ = 'Kostiantyn Bezverkhyi'
 
@@ -24,8 +24,13 @@ class EmptyModel(models.Model):
     def get_absolute_url(self):
         return self.get_admin_url()#'http://' + get_absolute_url() + self.get_admin_url()
     def get_absolute_url_link(self):
-        return mark_safe("<a href='%(link)s'>Click me!</a>" % {'link' : self.get_absolute_url()})
-    get_absolute_url_link.short_name = 'URL'
+        return mark_safe("<a href='%(link)s'>%(text)s</a>" % {'link' : self.get_absolute_url(), 'text' : self.__str__()})
+    def gab(self):#shortcut for self.get_absolute_url_link()
+        return self.get_absolute_url_link()
+    gab.short_description = 'Object'
+    def remove(self):
+        return mark_safe('<a class="inline-deletelink" title="delete" href="%s/delete/"></a>' % (self.pk))
+    remove.short_description = ''
 
 class CommonInfo(EmptyModel):
     name = models.CharField(max_length=200, help_text="Name of the current object.")
@@ -49,6 +54,9 @@ class Operator(CommonInfo):
     class Meta:
         unique_together = (("name", "location"),)
 
+class PackageType(CommonInfo):
+    pass
+
 class Package(CommonInfo):
     price = models.DecimalField("Initial price", max_digits=7, decimal_places=2, default=0, help_text="Initial price of package. Price that you pay when buy a new sim-card.")
     operator = models.ForeignKey('Operator', related_name='package', verbose_name="Operator",
@@ -58,12 +66,8 @@ class Package(CommonInfo):
     po_term = models.ForeignKey('POTerm', verbose_name='Package/Offer Term', null=True, blank=True,
                                 help_text="Time term of package usage/order")
     link = models.TextField(blank=True, help_text="Link to the site with current package")
-
     class Meta:
         unique_together = (("name", "operator"),)
-
-class PackageType(CommonInfo):
-    pass
 
 class Offer(CommonInfo):
     package = models.ManyToManyField('Package', verbose_name="Package", help_text="Reference to related package")
@@ -92,6 +96,8 @@ class POTerm(EmptyModel):
         else:
             res_str += "Not active"
         return res_str
+    def name(self):
+        return self.__str__()
     class Meta:
         verbose_name = "Package / Offer Term"
         verbose_name_plural = "Package / Offer Terms"
@@ -124,10 +130,9 @@ This table represents possible terms of using some feature/offer. For example: 1
 """
 class TermOfUsage(EmptyModel):
     amount = models.IntegerField("Amount", help_text="Limit to the amount of some service")
-    #TODO only units for current service type should be available for selection
     unit = models.ForeignKey('Unit', verbose_name="Measurement Units", help_text="Measurement units for the amount field value.")
     criterion = models.ForeignKey('Criterion', verbose_name="Criterion",
-                                  help_text="Criterion to evaluate, if == true -> use current term")
+                                  help_text="Criterion to evaluate, if set to 'true' -> use current term")
     service_type = models.ForeignKey('ServiceType', verbose_name="Service Type", help_text="Service type linked to current term")
     def __str__(self):
         return '%(criterion)s %(amount)s' % {'criterion' : self.criterion, 'amount' : self.amount}
@@ -152,7 +157,7 @@ class UnitToServiceType(CommonInfo):
     def __str__(self):
         return '%s - %s' % (self.unit, self.service_type)
     class Meta:
-        verbose_name_plural = "Unit to service type"
+        verbose_name_plural = "Units to service types"
 
 """
 This table represent information about possible criteria: >, >=, =, <=, <
@@ -228,6 +233,8 @@ class Feature(EmptyModel):
         if self.offer or self.package:
             res_str += ")"
         return res_str
+    def name(self):
+        return self.__str__()
     class Meta:
         unique_together = (("offer", "service"),)
 
@@ -253,9 +260,9 @@ class Param(EmptyModel):
         verbose_name = "Parameter"
         verbose_name_plural = "Parameters"
 
-class Directory(models.Model):
+class Directory(EmptyModel):
     key = models.CharField(max_length=200, help_text="Name of the key")
     value = models.TextField(help_text="Value of current key")
     changed_date = models.DateTimeField(auto_now=True, help_text="Date when current key was changed last time")
     class Meta:
-        verbose_name_plural = "Directories"
+        verbose_name_plural = "Directory"
