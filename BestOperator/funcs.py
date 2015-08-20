@@ -12,8 +12,13 @@ def get_editable_fields(model, supposed_fields):
             fields.append(field.name)
     return fields
 
-def expand_list_both_sides(my_list, append_start, append_end):
-    return append_start+my_list+append_end
+def expand_list_unique(append_start, my_list, append_end):
+    return unique(append_start+my_list+append_end)
+
+def unique(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if x not in seen and not seen_add(x)]
 
 class MagicSql:
     """

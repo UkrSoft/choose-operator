@@ -27,9 +27,9 @@ class CustomIndexDashboard(Dashboard):
         self.children.append(modules.LinkList(
             _('Quick links'),
             layout='inline',
-            draggable=False,
-            deletable=False,
-            collapsible=False,
+            draggable=True,
+            deletable=True,
+            collapsible=True,
             children=[
                 [_('Return to site'), '/'],
                 [_('Change password'),
@@ -38,74 +38,8 @@ class CustomIndexDashboard(Dashboard):
             ]
         ))
 
-        # # append an app list module for "Applications"
-        # self.children.append(modules.AppList(
-        #     _('Applications'),
-        #     exclude=('django.contrib.*',),
-        # ))
-        #
-        # # append an app list module for "Administration"
-        # self.children.append(modules.AppList(
-        #     _('Administration'),
-        #     models=('django.contrib.*',),
-        # ))
-        #
-        # # append a recent actions module
-        # self.children.append(modules.RecentActions(_('Recent Actions'), 5))
-        #
-        # # append a feed module
-        # self.children.append(modules.Feed(
-        #     _('Latest Django News'),
-        #     feed_url='http://www.djangoproject.com/rss/weblog/',
-        #     limit=5
-        # ))
-        #
-        # # append another link list module for "support".
-        # self.children.append(modules.LinkList(
-        #     _('Support'),
-        #     children=[
-        #         {
-        #             'title': _('Django documentation'),
-        #             'url': 'http://docs.djangoproject.com/',
-        #             'external': True,
-        #         },
-        #         {
-        #             'title': _('Django "django-users" mailing list'),
-        #             'url': 'http://groups.google.com/group/django-users',
-        #             'external': True,
-        #         },
-        #         {
-        #             'title': _('Django irc channel'),
-        #             'url': 'irc://irc.freenode.net/django',
-        #             'external': True,
-        #         },
-        #     ]
-        # ))
     def __init__(self, **kwargs):
         Dashboard.__init__(self, **kwargs)
-        self.children.append(
-            modules.ModelList(
-                title = _('Administrative'),
-                models = (
-                    'BestOperator.models.Directory',
-                    'BestOperator.models.ServiceType',
-                    'BestOperator.models.LocationType',
-                    'BestOperator.models.PackageType',
-                    'BestOperator.models.Attribute',
-                    'BestOperator.models.Criterion',
-                ),
-            )
-        )
-        self.children.append(
-            modules.ModelList(
-                title = _('Services'),
-                models = (
-                    'BestOperator.models.Service',
-                    'BestOperator.models.Direction',
-                    'BestOperator.models.Location',
-                ),
-            )
-        )
         self.children.append(
             modules.ModelList(
                 title = _('Operators/Packages'),
@@ -123,13 +57,23 @@ class CustomIndexDashboard(Dashboard):
                     'BestOperator.models.Offer',
                     'BestOperator.models.Feature',
                     'BestOperator.models.Param',
+                    'BestOperator.models.Attribute',
                 ),
             )
         )
-
         self.children.append(
             modules.ModelList(
-                title = _('Terms/Periods'),
+                title = _('Services'),
+                models = (
+                    'BestOperator.models.Service',
+                    'BestOperator.models.Direction',
+                    'BestOperator.models.Location',
+                ),
+            )
+        )
+        self.children.append(
+            modules.ModelList(
+                title = _('Terms / Payments'),
                 models = (
                     'BestOperator.models.POTerm',
                     'BestOperator.models.Payment',
@@ -138,8 +82,23 @@ class CustomIndexDashboard(Dashboard):
                 ),
             )
         )
-
-
+        self.children.append(
+            modules.ModelList(
+                title = _('Supplementary'),
+                models = (
+                    'BestOperator.models.Directory',
+                    'BestOperator.models.ServiceType',
+                    'BestOperator.models.LocationType',
+                    'BestOperator.models.PackageType',
+                    'BestOperator.models.Criterion',
+                ),
+            )
+        )
+        # append an app list module for "Administration"
+        # self.children.append(modules.AppList(
+        #     _('Site Administration'),
+        #     models=('django.contrib.*',),
+        # ))
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """
@@ -151,14 +110,13 @@ class CustomAppIndexDashboard(AppIndexDashboard):
 
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
-
+        self.children = CustomIndexDashboard().children
         # append a model list module and a recent actions module
         self.children += [
-            modules.ModelList(self.app_title, self.models),
             modules.RecentActions(
                 _('Recent Actions'),
                 include_list=self.get_app_content_types(),
-                limit=5
+                limit=10
             )
         ]
 

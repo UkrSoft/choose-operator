@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from BestOperator.forms import FeatureForm, PaymentForm, \
     SmallLinkForm
-from BestOperator.funcs import get_editable_fields, expand_list_both_sides
+from BestOperator.funcs import get_editable_fields, expand_list_unique
 from .models import *
 
 __author__ = 'Kostiantyn Bezverkhyi'
@@ -38,14 +38,16 @@ class OperatorPackageInline(CIM):
 
 #Start common admin model
 class CAM(admin.ModelAdmin):
-    list_disp_start = ['gab', ]
-    list_disp_end = ['remove', ]
-    list_display_links = ['gab', ]
     view_on_site = False
     save_on_top = True
     save_as = True
-    # search_fields = ['name', ] #TODO add search fields
-    #TODO add sorting to models in the admin
+    list_per_page = 25
+    def gim(in_model, in_list_display):
+        list_display = expand_list_unique(['get_pk', 'name', ], in_list_display, ['remove', ])
+        list_editable = get_editable_fields(in_model, list_display)
+        search_fields = get_editable_fields(in_model, ['name', ])
+        list_display_links = ['get_pk', ] if get_editable_fields(in_model, ['name', ]).__len__()>0 else ['name', ]
+        return list_display, list_editable, search_fields, list_display_links
     def get_actions(self, request):
         actions = super(CAM, self).get_actions(request)
         if 'delete_selected' in actions:
@@ -53,13 +55,9 @@ class CAM(admin.ModelAdmin):
         return actions
 #End common admin model
 
-def expand_list_display(my_list):
-    return expand_list_both_sides(my_list, CAM.list_disp_start, CAM.list_disp_end)
-
 #Start admin models
 class PackageTypeAdmin(CAM):
-    list_display = expand_list_display(['name', 'description'])
-    list_editable = get_editable_fields(PackageType, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(PackageType, ['name', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
@@ -68,8 +66,7 @@ class PackageTypeAdmin(CAM):
 class PackageAdmin(CAM):
     form = SmallLinkForm
     list_filter = ['operator', 'package_type', 'po_term__is_active']
-    list_display = expand_list_display(['name', 'operator', 'package_type', 'po_term', 'price'])
-    list_editable = get_editable_fields(Package, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Package, ['name', 'operator', 'package_type', 'po_term', 'price'])
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
         ('Operator Info',     {'fields': [('operator', 'package_type', ), ]}),
@@ -82,8 +79,7 @@ class OfferAdmin(CAM):
     form = SmallLinkForm
     filter_horizontal = ['package', ]
     list_filter = ['po_term__is_active', 'package']
-    list_display = expand_list_display(['name', 'packages', 'po_term'])
-    list_editable = get_editable_fields(Offer, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Offer, ['name', 'packages', 'po_term'])
     fieldsets = [
         (None,                  {'fields': [('name', 'link', ), ]}),
         ('Linked to',           {'fields': [('package', 'po_term'), ]}),
@@ -95,8 +91,7 @@ class FeatureAdmin(CAM):
     form = FeatureForm
     list_filter = ['service', ]
     readonly_fields = ['name', ]
-    list_display = expand_list_display(['name', 'service', 'package', 'offer'])
-    list_editable = get_editable_fields(Feature, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Feature, ['name', 'service', 'package', 'offer'])
     fieldsets = [
         (None,                {'fields': ['name', 'service', ]}),
         ('Linked to',         {'fields': [('package', 'offer'), ]}),
@@ -107,8 +102,7 @@ class PaymentAdmin(CAM):
     form = PaymentForm
     list_filter = ['period', 'term_of_usage__service_type', 'term_of_usage']
     readonly_fields = ['name', ]
-    list_display = expand_list_display(['name', 'feature', 'offer', 'period', 'term_of_usage'])
-    list_editable = get_editable_fields(Payment, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Payment, ['name', 'feature', 'offer', 'period', 'term_of_usage'])
     fieldsets = [
         (None,                {'fields': [('name', 'feature', 'offer'), ]}),
         ('Pricing options',   {'fields': [('period', 'price', 'term_of_usage'), ]}),
@@ -120,8 +114,7 @@ class PaymentAdmin(CAM):
 
 class PeriodAdmin(CAM):
     list_filter = ['num_of_days', ]
-    list_display = expand_list_display(['name', 'num_of_days', 'from_time', 'to_time'])
-    list_editable = get_editable_fields(Period, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Period, ['name', 'num_of_days', 'from_time', 'to_time'])
     fieldsets = [
         (None,                {'fields': [('name', 'num_of_days'), ]}),
         ('Periods',           {'fields': [('from_time', 'to_time'),]}),
@@ -131,8 +124,7 @@ class PeriodAdmin(CAM):
 class POTermAdmin(CAM):
     readonly_fields = ['name', ]
     list_filter = ['is_active', ]
-    list_display = expand_list_display(['name', 'is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])
-    list_editable = get_editable_fields(POTerm, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(POTerm, ['name', 'is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])
     fieldsets = [
         (None,                {'fields': ['name', 'is_active', ]}),
         ('Active',            {'fields': [('active_from_date', 'active_to_date'), ]}),
@@ -142,16 +134,14 @@ class POTermAdmin(CAM):
 
 class ServiceTypeAdmin(CAM):
     list_filter = ['is_displayed', ]
-    list_display = expand_list_display(['name', 'description'])
-    list_editable = get_editable_fields(ServiceType, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(ServiceType, ['name', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', 'is_displayed'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 
 class LocationTypeAdmin(CAM):
-    list_display = expand_list_display(['name', 'description'])
-    list_editable = get_editable_fields(LocationType, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(LocationType, ['name', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
@@ -159,8 +149,7 @@ class LocationTypeAdmin(CAM):
 
 class LocationAdmin(CAM):
     list_filter = ['location_type', 'included_in']
-    list_display = expand_list_display(['name', 'location_type', 'included_in'])
-    list_editable = get_editable_fields(Location, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Location, ['name', 'location_type', 'included_in'])
     fieldsets = [
         (None,                {'fields': [('name', 'location_type'), ]}),
         ('Pricing options',   {'fields': [('included_in', ), ]}),
@@ -170,8 +159,8 @@ class LocationAdmin(CAM):
 
 class ServicesAdmin(CAM):
     list_filter = ['service_type', 'direction__to_location', 'direction__to_operator']
-    list_display = expand_list_display(['name', 'service_type', 'direction'])
-    list_editable = get_editable_fields(Service, list_display)
+    readonly_fields = ['name', ]
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['name', 'service_type', 'direction'])
     fieldsets = [
         (None,                {'fields': ['name', ]}),
         ('Reference Info',    {'fields': [('service_type', 'direction'), ]}),
@@ -181,8 +170,7 @@ class ServicesAdmin(CAM):
 class OperatorAdmin(CAM):
     form = SmallLinkForm
     list_filter = ['location', ]
-    list_display = expand_list_display(['name', 'location', 'description'])
-    list_editable = get_editable_fields(Operator, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Operator, ['name', 'location', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
         ('Location Info',     {'fields': [('location', ), ]}),
@@ -193,8 +181,7 @@ class OperatorAdmin(CAM):
 class ParamAdmin(CAM):
     list_filter = ['attr', ]
     readonly_fields = ['name', ]
-    list_display = expand_list_display(['name', 'attr', 'value', 'feature'])
-    list_editable = get_editable_fields(Param, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Param, ['name', 'attr', 'value', 'feature'])
     fieldsets = [
         (None,                {'fields': ['name', ('attr', 'value'), ]}),
         ('Linked to',         {'fields': [('feature', ), ]}),
@@ -204,8 +191,7 @@ class ParamAdmin(CAM):
 class TermsOfUsageAdmin(CAM):
     list_filter = ['amount', 'service_type']
     readonly_fields = ['name', ]
-    list_display = expand_list_display(['name', 'criterion', 'amount', 'unit'])
-    list_editable = get_editable_fields(TermOfUsage, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(TermOfUsage, ['name', 'criterion', 'amount', 'unit'])
     fieldsets = [
         (None,                {'fields': ['name', ('criterion', 'amount', 'unit'), ]}),
         ('Linked to',         {'fields': ['service_type', ]}),
@@ -214,16 +200,14 @@ class TermsOfUsageAdmin(CAM):
 
 class AttributeAdmin(CAM):
     list_filter = ['service_type', 'unit']
-    list_display = expand_list_display(['name', 'service_type', 'unit'])
-    list_editable = get_editable_fields(Attribute, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Attribute, ['name', 'service_type', 'unit'])
     fieldsets = [
         (None,                {'fields': [('service_type', 'name', 'unit'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 
 class UnitAdmin(CAM):
-    list_display = expand_list_display(['unit', 'compared_to', 'multiplier'])
-    list_editable = get_editable_fields(Unit, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Unit, ['unit', 'compared_to', 'multiplier'])
     fieldsets = [
         (None,                {'fields': [('name', 'unit'), ]}),
         ('Self reference',    {'fields': [('compared_to', 'multiplier'), ]}),
@@ -231,8 +215,7 @@ class UnitAdmin(CAM):
     ]
 
 class CriterionAdmin(CAM):
-    list_display = expand_list_display(['name', 'description'])
-    list_editable = get_editable_fields(Criterion, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Criterion, ['name', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
@@ -241,8 +224,7 @@ class CriterionAdmin(CAM):
 class DirectionAdmin(CAM):
     list_filter = ['from_location', 'to_location', 'to_operator']
     readonly_fields = ['name', ]
-    list_display = expand_list_display(['name', 'from_location', 'to_location', 'to_operator'])
-    list_editable = get_editable_fields(Direction, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['name', 'from_location', 'to_location', 'to_operator'])
     fieldsets = [
         (None,                {'fields': ['name', ('from_location', 'to_location', ), ]}),
         ('Linked to',         {'fields': [('to_operator', ), ]}),
@@ -251,8 +233,7 @@ class DirectionAdmin(CAM):
 
 class CodeAdmin(CAM):
     list_filter = ('operator', )
-    list_display = expand_list_display(['operator_code', 'operator'])
-    list_editable = get_editable_fields(Code, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Code, ['operator_code', 'operator'])
     fieldsets = [
         (None,                {'fields': [('operator', 'operator_code', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
@@ -260,8 +241,7 @@ class CodeAdmin(CAM):
 
 class DirectoryAdmin(CAM):
     list_filter = ('changed_date', )
-    list_display = expand_list_display(['key', 'value', 'changed_date'])
-    list_editable = get_editable_fields(Directory, list_display)
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Directory, ['key', 'value', 'changed_date'])
     fieldsets = [
         (None,                {'fields': [('key', 'value', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),

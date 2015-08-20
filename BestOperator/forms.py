@@ -1,26 +1,41 @@
 from django import forms
+from django.contrib import admin
+from django.db.models import OneToOneRel
 from django.forms import models
-from BestOperator.models import Offer, Package, Service, Feature, Payment, \
-    EmptyModel
+from BestOperator.models import Offer, Package, Feature, Payment, \
+    DescriptionModel
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 
+def add_widgets(form, col_name):
+    rel_model = form.Meta.model
+    rel = rel_model._meta.get_field(col_name).rel
+    form.fields[col_name].widget = RelatedFieldWidgetWrapper(form.fields[col_name].widget, rel, admin.site
+                                                             , can_add_related=True, can_change_related=True)
 
 class SmallLinkForm(forms.ModelForm):
     link = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows':2, 'cols':80}))
     class Meta:
-        model = EmptyModel
+        model = DescriptionModel
         fields = models.ALL_FIELDS
 
-class FeatureForm(forms.ModelForm):#TODO why help text/create/edit links are not displayed in the form?
+class FeatureForm(forms.ModelForm):#TODO why help text is not displayed?
     offer = forms.ModelChoiceField(queryset=Offer.objects.all(), required=False)
     package = forms.ModelChoiceField(queryset=Package.objects.all(), required=False)
-    service = forms.ModelChoiceField(queryset=Service.objects.all()) #TODO this field was added to add custom widget to admin in the future
+    def __init__(self, *args, **kwargs):
+        super(FeatureForm, self).__init__(*args, **kwargs)
+        add_widgets(self, 'offer')
+        add_widgets(self, 'package')
     def clean(self):
         cleaned_data = super(FeatureForm, self).clean()
         package = cleaned_data.get("package")
         offer = cleaned_data.get("offer")
 
-        if package is None == offer is None:
+        msg = None
+        if package is None and offer is None:
             msg = "Neither package nor offer field value was specified."
+        if package is not None and offer is not None:
+            msg = "Only one of package or offer fields should be populated."
+        if msg:
             self.add_error('package', msg)
             self.add_error('offer', msg)
     class Meta:
@@ -30,13 +45,21 @@ class FeatureForm(forms.ModelForm):#TODO why help text/create/edit links are not
 class PaymentForm(forms.ModelForm):
     offer = forms.ModelChoiceField(queryset=Offer.objects.all(), required=False)
     feature = forms.ModelChoiceField(queryset=Feature.objects.all(), required=False)
+    def __init__(self, *args, **kwargs):
+        super(PaymentForm, self).__init__(*args, **kwargs)
+        add_widgets(self, 'offer')
+        add_widgets(self, 'feature')
     def clean(self):
         cleaned_data = super(PaymentForm, self).clean()
         feature = cleaned_data.get("feature")
         offer = cleaned_data.get("offer")
 
-        if feature is None == offer is None:
+        msg = None
+        if feature is None and offer is None:
             msg = "Neither feature nor offer field value was specified."
+        if feature is not None and offer is not None:
+            msg = "Only one of feature or offer fields should be populated."
+        if msg:
             self.add_error('feature', msg)
             self.add_error('offer', msg)
     class Meta:
