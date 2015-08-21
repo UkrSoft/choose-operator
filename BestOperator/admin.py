@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from BestOperator.forms import FeatureForm, PaymentForm, \
     SmallLinkForm
-from BestOperator.funcs import get_editable_fields, expand_list_unique
+from BestOperator.funcs import get_editable_fields, expand_list_unique, \
+    get_existent_fields
 from .models import *
 
 __author__ = 'Kostiantyn Bezverkhyi'
@@ -11,8 +12,10 @@ __author__ = 'Kostiantyn Bezverkhyi'
 class CIM(admin.StackedInline):
     extra = 0
     show_change_link = True
+    view_on_site = False
 #End common inline model
-
+#todo improve general perception and linkage of the admin pages
+#TODO make [Save] button on top of the model list page
 #Start inlines
 class LocationLocationAdmin(CIM):
     model = Location
@@ -20,20 +23,46 @@ class LocationLocationAdmin(CIM):
 
 class OfferFeatureInline(CIM):
     model = Feature
-    fieldsets = [(None, {'fields': ['service']}), ]
+    fieldsets = [(None, {'fields': ['service', 'service__service_type', 'service__direction', ]}), ]
+    readonly_fields = ['service__service_type', 'service__direction', ]
+    def service__service_type(self, instance):
+        return instance.service.service_type
+    service__service_type.short_description = 'Service Type'
+    def service__direction(self, instance):
+        return instance.service.direction
+    service__direction.short_description = 'Service Direction'
 
 class PackageOfferInline(CIM):
     model = Offer.package.through
-    readonly_fields = ['terms', 'url']
+    fieldsets = [(None, {'fields': [('offer', 'url'), 'terms', ('terms__active_from_date', 'terms__active_to_date')
+                                    , ('terms__order_from_date', 'terms__order_to_date')
+                                    ]}), ]
+    readonly_fields = ['terms', 'url', 'terms__active_from_date', 'terms__active_to_date'
+                                    , 'terms__order_from_date', 'terms__order_to_date']
+    verbose_name = 'Offer'
+    verbose_name_plural = 'Offers'
     def url(self, instance):
         return instance.offer.get_absolute_url_link()
+    url.allow_tags = True
     def terms(self, instance):
         return instance.offer.po_term
+    def terms__active_from_date(self, instance):
+        return instance.offer.po_term.active_from_date
+    terms__active_from_date.short_description = 'Active From'
+    def terms__active_to_date(self, instance):
+        return instance.offer.po_term.active_to_date
+    terms__active_to_date.short_description = 'Active To'
+    def terms__order_from_date(self, instance):
+        return instance.offer.po_term.order_from_date
+    terms__order_from_date.short_description = 'Order From'
+    def terms__order_to_date(self, instance):
+        return instance.offer.po_term.order_to_date
+    terms__order_to_date.short_description = 'Order To'
 
 class OperatorPackageInline(CIM):
     form = SmallLinkForm
     model = Package
-    fieldsets = [(None, {'fields': ['name', 'package_type', 'price', 'link']}), ]
+    fieldsets = [(None, {'fields': [('name', 'package_type', 'link'), ('po_term', 'price')]}), ]
 #End inlines
 
 #Start common admin model
@@ -41,12 +70,12 @@ class CAM(admin.ModelAdmin):
     view_on_site = False
     save_on_top = True
     save_as = True
-    list_per_page = 25
+    list_per_page = 20
     def gim(in_model, in_list_display):
-        list_display = expand_list_unique(['get_pk', 'name', ], in_list_display, ['remove', ])
-        list_editable = get_editable_fields(in_model, list_display)
-        search_fields = get_editable_fields(in_model, ['name', ])
-        list_display_links = ['get_pk', ] if get_editable_fields(in_model, ['name', ]).__len__()>0 else ['name', ]
+        list_display = expand_list_unique(['get_pk', ], in_list_display, ['remove', ])#'name',
+        list_editable = [f.name for f in get_editable_fields(in_model, list_display)]
+        search_fields = [f.name for f in get_existent_fields(in_model, ['name', ])]
+        list_display_links = ['get_pk', ] #if get_editable_fields(in_model, ['name', ]).__len__()>0 else ['name', ]
         return list_display, list_editable, search_fields, list_display_links
     def get_actions(self, request):
         actions = super(CAM, self).get_actions(request)
@@ -65,7 +94,7 @@ class PackageTypeAdmin(CAM):
 
 class PackageAdmin(CAM):
     form = SmallLinkForm
-    list_filter = ['operator', 'package_type', 'po_term__is_active']
+    list_filter = ['operator', 'package_type', 'po_term__is_active']#TODO re-write admin.register to include this logic
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Package, ['name', 'operator', 'package_type', 'po_term', 'price'])
     fieldsets = [
         (None,                {'fields': [('name', 'link')]}),
@@ -101,16 +130,13 @@ class FeatureAdmin(CAM):
 class PaymentAdmin(CAM):
     form = PaymentForm
     list_filter = ['period', 'term_of_usage__service_type', 'term_of_usage']
-    readonly_fields = ['name', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Payment, ['name', 'feature', 'offer', 'period', 'term_of_usage'])
+    # readonly_fields = ['name', ]
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Payment, ['feature', 'offer', 'period', 'term_of_usage'])#'name',
     fieldsets = [
         (None,                {'fields': [('name', 'feature', 'offer'), ]}),
         ('Pricing options',   {'fields': [('period', 'price', 'term_of_usage'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
-    def name(self, instance):
-        return instance.__str__()
-    name.short_description = 'Name'
 
 class PeriodAdmin(CAM):
     list_filter = ['num_of_days', ]
@@ -122,9 +148,9 @@ class PeriodAdmin(CAM):
     ]
 
 class POTermAdmin(CAM):
-    readonly_fields = ['name', ]
+    # readonly_fields = ['name', ]
     list_filter = ['is_active', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(POTerm, ['name', 'is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(POTerm, ['is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])#'name',
     fieldsets = [
         (None,                {'fields': ['name', 'is_active', ]}),
         ('Active',            {'fields': [('active_from_date', 'active_to_date'), ]}),
@@ -159,8 +185,8 @@ class LocationAdmin(CAM):
 
 class ServicesAdmin(CAM):
     list_filter = ['service_type', 'direction__to_location', 'direction__to_operator']
-    readonly_fields = ['name', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['name', 'service_type', 'direction'])
+    # readonly_fields = ['name', ]
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['service_type', 'direction'])#'name',
     fieldsets = [
         (None,                {'fields': ['name', ]}),
         ('Reference Info',    {'fields': [('service_type', 'direction'), ]}),
@@ -170,18 +196,17 @@ class ServicesAdmin(CAM):
 class OperatorAdmin(CAM):
     form = SmallLinkForm
     list_filter = ['location', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Operator, ['name', 'location', 'description'])
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Operator, ['name', 'location'])
     fieldsets = [
-        (None,                {'fields': [('name', 'link')]}),
-        ('Location Info',     {'fields': [('location', ), ]}),
+        (None,                {'fields': [('name', 'location', 'link')]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
     inlines = [OperatorPackageInline, ]
 
 class ParamAdmin(CAM):
     list_filter = ['attr', ]
-    readonly_fields = ['name', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Param, ['name', 'attr', 'value', 'feature'])
+    # readonly_fields = ['name', ]
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Param, ['attr', 'value', 'feature'])#'name',
     fieldsets = [
         (None,                {'fields': ['name', ('attr', 'value'), ]}),
         ('Linked to',         {'fields': [('feature', ), ]}),

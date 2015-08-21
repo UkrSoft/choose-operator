@@ -1,16 +1,15 @@
 from django import forms
 from django.contrib import admin
-from django.db.models import OneToOneRel
 from django.forms import models
 from BestOperator.models import Offer, Package, Feature, Payment, \
     DescriptionModel
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 
-def add_widgets(form, col_name):
-    rel_model = form.Meta.model
-    rel = rel_model._meta.get_field(col_name).rel
-    form.fields[col_name].widget = RelatedFieldWidgetWrapper(form.fields[col_name].widget, rel, admin.site
-                                                             , can_add_related=True, can_change_related=True)
+def add_related_field_wrapper(form, col_name):
+    rel = form.Meta.model._meta.get_field(col_name).rel
+    form.fields[col_name].widget = RelatedFieldWidgetWrapper(
+        form.fields[col_name].widget, rel, admin.site,
+        can_add_related=True, can_change_related=True)
 
 class SmallLinkForm(forms.ModelForm):
     link = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows':2, 'cols':80}))
@@ -23,8 +22,8 @@ class FeatureForm(forms.ModelForm):#TODO why help text is not displayed?
     package = forms.ModelChoiceField(queryset=Package.objects.all(), required=False)
     def __init__(self, *args, **kwargs):
         super(FeatureForm, self).__init__(*args, **kwargs)
-        add_widgets(self, 'offer')
-        add_widgets(self, 'package')
+        add_related_field_wrapper(self, 'offer')
+        add_related_field_wrapper(self, 'package')
     def clean(self):
         cleaned_data = super(FeatureForm, self).clean()
         package = cleaned_data.get("package")
@@ -47,8 +46,8 @@ class PaymentForm(forms.ModelForm):
     feature = forms.ModelChoiceField(queryset=Feature.objects.all(), required=False)
     def __init__(self, *args, **kwargs):
         super(PaymentForm, self).__init__(*args, **kwargs)
-        add_widgets(self, 'offer')
-        add_widgets(self, 'feature')
+        add_related_field_wrapper(self, 'offer')
+        add_related_field_wrapper(self, 'feature')
     def clean(self):
         cleaned_data = super(PaymentForm, self).clean()
         feature = cleaned_data.get("feature")

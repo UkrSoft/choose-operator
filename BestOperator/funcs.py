@@ -1,15 +1,18 @@
 from collections import namedtuple
-from django.contrib.sites.models import Site
+# from django.contrib.sites.models import Site
 from django.db import connection
 
 # def get_absolute_url():
 #     return Site.objects.get_current().domain
 
 def get_editable_fields(model, supposed_fields):
+    return [field for field in get_existent_fields(model, supposed_fields) if field.editable and not field.many_to_many]
+
+def get_existent_fields(model, supposed_fields):
     fields = []
     for field in model._meta.get_fields():
-        if (not field.many_to_many and field.editable and field.name in supposed_fields):
-            fields.append(field.name)
+        if (field.name in supposed_fields):
+            fields.append(field)
     return fields
 
 def expand_list_unique(append_start, my_list, append_end):
