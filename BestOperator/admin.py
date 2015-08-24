@@ -185,7 +185,7 @@ class LocationAdmin(CAM):
 
 class ServicesAdmin(CAM):
     list_filter = ['service_type', 'direction__to_location', 'direction__to_operator']
-    # readonly_fields = ['name', ]
+    readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['service_type', 'direction'])#'name',
     fieldsets = [
         (None,                {'fields': ['name', ]}),
