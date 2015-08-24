@@ -10,7 +10,6 @@ from BestOperator.models import Operator, ServiceType
 
 class MainView(TemplateView):
     template_name = "BestOperator/index.html"
-
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
         context['operators'] = Operator.objects.all()
@@ -38,31 +37,31 @@ def post_results(request):
         return render(request, 'BestOperator/index.html', context)#TODO HttpResponseRedirect
     else:
         sql = 'select  ' \
-        '    o.name as oper_name' \
-        '    , o.link as oper_link' \
-        '    , p.id as pack_id' \
-        '    , p.name as pack_name' \
-        '    , p.description as pack_descr' \
-        '    , round(p.price, 0) as pack_price' \
-        '    , p.link as pack_link' \
-        '    , pf.id as pack_feature_id' \
-        '    , ps.name as pack_service_name' \
-        '    , pst.name as pack_service_type' \
-        '    , off.name as offer_name' \
-        '    , s.name as service_name' \
-        '    , st.name as st_name' \
-        ' from  ' \
-        '    bestoperator_operator o' \
-        '    join bestoperator_package p on p.operator_id = o.id' \
-        '    left join bestoperator_feature pf on pf.package_id = p.id' \
-        '    left join bestoperator_service ps on pf.service_id = ps.id' \
-        '    left join bestoperator_servicetype pst on pst.id = ps.service_type_id' \
-        '    left join bestoperator_offer_package oftp on oftp.package_id = p.id' \
-        '    left join bestoperator_offer off on oftp.offer_id = off.id' \
-        '    left join bestoperator_feature f on f.offer_id = off.id' \
-        '    left join bestoperator_service s on f.service_id = s.id' \
-        '    left join bestoperator_servicetype st on st.id = s.service_type_id' \
-        ' order by o.name, p.name'
+              '    o.name as oper_name' \
+              '    , o.link as oper_link' \
+              '    , p.id as pack_id' \
+              '    , p.name as pack_name' \
+              '    , p.description as pack_descr' \
+              '    , round(p.price, 0) as pack_price' \
+              '    , p.link as pack_link' \
+              '    , pf.id as pack_feature_id' \
+              '    , ps.name as pack_service_name' \
+              '    , pst.name as pack_service_type' \
+              '    , off.name as offer_name' \
+              '    , s.name as service_name' \
+              '    , st.name as st_name' \
+              ' from  ' \
+              '    bestoperator_operator o' \
+              '    join bestoperator_package p on p.operator_id = o.id' \
+              '    left join bestoperator_feature pf on pf.package_id = p.id' \
+              '    left join bestoperator_service ps on pf.service_id = ps.id' \
+              '    left join bestoperator_servicetype pst on pst.id = ps.service_type_id' \
+              '    left join bestoperator_offer_package oftp on oftp.package_id = p.id' \
+              '    left join bestoperator_offer off on oftp.offer_id = off.id' \
+              '    left join bestoperator_feature f on f.offer_id = off.id' \
+              '    left join bestoperator_service s on f.service_id = s.id' \
+              '    left join bestoperator_servicetype st on st.id = s.service_type_id' \
+              ' order by o.name, p.name'
         sqlRows = MagicSql(sql).get_named_tuple()
         # 2) make calculations:
         #   this would be just one multi-table join SQL query
