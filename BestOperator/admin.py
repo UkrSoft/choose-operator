@@ -247,12 +247,13 @@ class CriterionAdmin(CAM):
     ]
 
 class DirectionAdmin(CAM):
-    list_filter = ['from_location', 'to_location']
-    readonly_fields = ['name', 'to_operators', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['name', 'from_location', 'to_location', 'to_operators'])
+    filter_horizontal = ['to_operator', ]
+    list_filter = ['from_location', 'to_location', 'to_operators']
+    readonly_fields = ['to_operators', ]#'name',
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['from_location', 'to_location', 'to_operators'])#'name',
     fieldsets = [
-        (None,                {'fields': ['name', ('from_location', 'to_location', ), ]}),
-        ('Linked to',         {'fields': [('to_operator', 'to_operators'), ]}),
+        (None,                {'fields': [('from_location', 'to_location', ), 'to_operators']}),#'name',
+        ('Linked to',         {'fields': [('to_operator'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 
