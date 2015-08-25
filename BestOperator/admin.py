@@ -184,7 +184,7 @@ class LocationAdmin(CAM):
     inlines = [LocationLocationAdmin, ]
 
 class ServicesAdmin(CAM):
-    list_filter = ['service_type', 'direction__to_location', 'direction__to_operator']
+    list_filter = ['service_type', 'direction__to_location', 'direction__to_operators']
     readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['service_type', 'direction'])#'name',
     fieldsets = [
@@ -247,12 +247,12 @@ class CriterionAdmin(CAM):
     ]
 
 class DirectionAdmin(CAM):
-    list_filter = ['from_location', 'to_location', 'to_operator']
-    readonly_fields = ['name', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['name', 'from_location', 'to_location', 'to_operator'])
+    list_filter = ['from_location', 'to_location']
+    readonly_fields = ['name', 'to_operators', ]
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['name', 'from_location', 'to_location', 'to_operators'])
     fieldsets = [
         (None,                {'fields': ['name', ('from_location', 'to_location', ), ]}),
-        ('Linked to',         {'fields': [('to_operator', ), ]}),
+        ('Linked to',         {'fields': [('to_operator', 'to_operators'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 
