@@ -129,12 +129,14 @@ class FeatureAdmin(CAM):
 
 class PaymentAdmin(CAM):
     form = PaymentForm
+    filter_horizontal = ['depends_on', ]
     list_filter = ['period', 'term_of_usage__service_type', 'term_of_usage']
-    # readonly_fields = ['name', ]
+    readonly_fields = ['depends_on_str']
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Payment, ['feature', 'offer', 'period', 'term_of_usage'])#'name',
     fieldsets = [
-        (None,                {'fields': [('name', 'feature', 'offer'), ]}),
-        ('Pricing options',   {'fields': [('period', 'price', 'term_of_usage'), ]}),
+        (None,                {'fields': [('feature', 'offer'), ]}),
+        ('Pricing options',   {'fields': [('period', 'price', 'term_of_usage'), 'depends_on_str', ]}),
+        ('Depends on',        {'fields': [('depends_on', ), ], 'classes':['collapse']}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 
@@ -148,11 +150,11 @@ class PeriodAdmin(CAM):
     ]
 
 class POTermAdmin(CAM):
-    # readonly_fields = ['name', ]
     list_filter = ['is_active', ]
+    # readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(POTerm, ['is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])#'name',
     fieldsets = [
-        (None,                {'fields': ['name', 'is_active', ]}),
+        (None,                {'fields': ['is_active', ]}),
         ('Active',            {'fields': [('active_from_date', 'active_to_date'), ]}),
         ('Can buy',           {'fields': [('order_from_date', 'order_to_date'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
@@ -208,7 +210,7 @@ class ParamAdmin(CAM):
     # readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Param, ['attr', 'value', 'feature'])#'name',
     fieldsets = [
-        (None,                {'fields': ['name', ('attr', 'value'), ]}),
+        (None,                {'fields': [('attr', 'value'), ]}),
         ('Linked to',         {'fields': [('feature', ), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
