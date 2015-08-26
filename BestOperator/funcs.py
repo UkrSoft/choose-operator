@@ -1,6 +1,7 @@
 from collections import namedtuple
 # from django.contrib.sites.models import Site
 from django.db import connection
+from django.utils.translation import ugettext_lazy as _
 
 # def get_absolute_url():
 #     return Site.objects.get_current().domain
@@ -84,9 +85,9 @@ class MagicSql:
                             t.append("%s" % cell)
                         except Exception as e:
                             if field in trans.keys():
-                                print('Exception while processing \'%(col)s\' column, value = \'%(cell)s\' with message \'%(message)s\'' % {'col' : field, 'cell' : saved_cell, 'message': trans[field]})
+                                print(_("Exception while processing '%(col)s' column, value = '%(cell)s' with message '%(message)s'") % {'col' : field, 'cell' : saved_cell, 'message': trans[field]})
                             else:
-                                print('Exception while processing \'%(col)s\' column, value = \'%(cell)s\'' % {'col' : field, 'cell' : saved_cell})
+                                print(_("Exception while processing '%(col)s' column, value = '%(cell)s'") % {'col' : field, 'cell' : saved_cell})
                             t.append("%s" % saved_cell)
                 else:
                     i = 0

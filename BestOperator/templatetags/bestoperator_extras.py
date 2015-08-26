@@ -1,5 +1,6 @@
 from django import template
 import re
+from django.utils.translation import ugettext_lazy as _
 
 register = template.Library()
 
@@ -28,8 +29,8 @@ def get_value(struct, key):
     if (isinstance(struct, dict)):
         if (key in struct.keys()):
             return struct.get(key)
-        return 'gv:key \''+key+'\' doesn\'t exist'
-    return 'gv:<unknown type>:'+struct
+        return _("gv:key '%(key)s' doesn't exist") % {'key' : key}
+    return _('gv:<unknown type>:')+struct
 
 def get_attr_values(id, type):
     """Returns attr names and values lined to the given object by given id and object type"""

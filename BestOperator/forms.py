@@ -4,6 +4,7 @@ from django.forms import models
 from BestOperator.models import Offer, Package, Feature, Payment, \
     DescriptionModel
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.utils.translation import ugettext_lazy as _
 
 def add_related_field_wrapper(form, col_name):
     rel = form.Meta.model._meta.get_field(col_name).rel
@@ -31,9 +32,9 @@ class FeatureForm(forms.ModelForm):#TODO why help text is not displayed?
 
         msg = None
         if package is None and offer is None:
-            msg = "Neither package nor offer field value was specified."
+            msg = _("Neither package nor offer field value was specified.")
         if package is not None and offer is not None:
-            msg = "Only one of package or offer fields should be populated."
+            msg = _("Only one of package or offer fields should be populated.")
         if msg:
             self.add_error('package', msg)
             self.add_error('offer', msg)
@@ -55,9 +56,9 @@ class PaymentForm(forms.ModelForm):
 
         msg = None
         if feature is None and offer is None:
-            msg = "Neither feature nor offer field value was specified."
+            msg = _("Neither feature nor offer field value was specified.")
         if feature is not None and offer is not None:
-            msg = "Only one of feature or offer fields should be populated."
+            msg = _("Only one of feature or offer fields should be populated.")
         if msg:
             self.add_error('feature', msg)
             self.add_error('offer', msg)

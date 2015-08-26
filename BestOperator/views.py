@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 
 from BestOperator.funcs import MagicSql
 from BestOperator.models import Operator, ServiceType
+from django.utils.translation import ugettext_lazy as _
 
 
 class MainView(TemplateView):
@@ -33,7 +34,7 @@ def post_results(request):
     except (KeyError, Operator.DoesNotExist, ServiceType.DoesNotExist):
         # Redisplay the question voting form.
         context = RequestContext(request, {
-            'error_message': "Ви не зробили свій вибір.",
+            'error_message': _("You didn't make your choice"),
         })
         return render(request, 'BestOperator/index.html', context)#TODO HttpResponseRedirect
     else:
