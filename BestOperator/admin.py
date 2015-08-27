@@ -130,7 +130,7 @@ class FeatureAdmin(CAM):
 class PaymentAdmin(CAM):
     form = PaymentForm
     list_filter = ['period', 'term_of_usage__service_type', 'term_of_usage']
-    # readonly_fields = ['name', ]
+    readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Payment, ['feature', 'offer', 'period', 'term_of_usage'])#'name',
     fieldsets = [
         (None,                {'fields': [('name', 'feature', 'offer'), ]}),
@@ -148,7 +148,7 @@ class PeriodAdmin(CAM):
     ]
 
 class POTermAdmin(CAM):
-    # readonly_fields = ['name', ]
+    readonly_fields = ['name', ]
     list_filter = ['is_active', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(POTerm, ['is_active', 'active_from_date', 'active_to_date', 'order_from_date', 'order_to_date'])#'name',
     fieldsets = [
@@ -160,6 +160,7 @@ class POTermAdmin(CAM):
 
 class ServiceTypeAdmin(CAM):
     list_filter = ['is_displayed', ]
+    readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(ServiceType, ['name', 'description'])
     fieldsets = [
         (None,                {'fields': [('name', 'is_displayed'), ]}),
@@ -184,7 +185,7 @@ class LocationAdmin(CAM):
     inlines = [LocationLocationAdmin, ]
 
 class ServicesAdmin(CAM):
-    list_filter = ['service_type', 'direction__to_location', 'direction__to_operator']
+    list_filter = ['service_type', 'direction__to_location', 'direction__to_operators']
     readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Service, ['service_type', 'direction'])#'name',
     fieldsets = [
@@ -205,7 +206,7 @@ class OperatorAdmin(CAM):
 
 class ParamAdmin(CAM):
     list_filter = ['attr', ]
-    # readonly_fields = ['name', ]
+    readonly_fields = ['name', ]
     list_display, list_editable, search_fields, list_display_links = CAM.gim(Param, ['attr', 'value', 'feature'])#'name',
     fieldsets = [
         (None,                {'fields': ['name', ('attr', 'value'), ]}),
@@ -247,12 +248,13 @@ class CriterionAdmin(CAM):
     ]
 
 class DirectionAdmin(CAM):
-    list_filter = ['from_location', 'to_location', 'to_operator']
-    readonly_fields = ['name', ]
-    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['name', 'from_location', 'to_location', 'to_operator'])
+    filter_horizontal = ['to_operator', ]
+    list_filter = ['from_location', 'to_location', 'to_operators']
+    readonly_fields = ['to_operators', ]#'name',
+    list_display, list_editable, search_fields, list_display_links = CAM.gim(Direction, ['from_location', 'to_location', 'to_operators'])#'name',
     fieldsets = [
-        (None,                {'fields': ['name', ('from_location', 'to_location', ), ]}),
-        ('Linked to',         {'fields': [('to_operator', ), ]}),
+        (None,                {'fields': [('from_location', 'to_location', ), 'to_operators']}),#'name',
+        ('Linked to',         {'fields': [('to_operator'), ]}),
         ('Extra',             {'fields': ['description'], 'classes':['collapse']}),
     ]
 

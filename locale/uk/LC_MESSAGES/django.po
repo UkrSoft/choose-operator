@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-26 23:58-0600\n"
+"POT-Creation-Date: 2015-08-27 00:13-0600\n"
 "PO-Revision-Date: 2015-08-26 22:42-0600\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -43,7 +43,7 @@ msgstr "Оператори/Пакети"
 msgid "Offers/Features"
 msgstr "Пропозиції/Функції"
 
-#: .\BestOperator\dashboard.py:66 .\BestOperator\models.py:294
+#: .\BestOperator\dashboard.py:66 .\BestOperator\models.py:299
 msgid "Services"
 msgstr "Послуги"
 
@@ -208,7 +208,7 @@ msgid "Site page with current package"
 msgstr ""
 
 #: .\BestOperator\models.py:92 .\BestOperator\models.py:96
-#: .\BestOperator\models.py:298
+#: .\BestOperator\models.py:303
 msgid "Package"
 msgstr "Пакет"
 
@@ -233,7 +233,7 @@ msgid "Site page with current offer"
 msgstr ""
 
 #: .\BestOperator\models.py:103 .\BestOperator\models.py:158
-#: .\BestOperator\models.py:297
+#: .\BestOperator\models.py:302
 msgid "Offer"
 msgstr "Пропозиція"
 
@@ -339,12 +339,12 @@ msgstr ""
 msgid "Reference to Term Of Usage"
 msgstr "Посилання на характеристику"
 
-#: .\BestOperator\models.py:157 .\BestOperator\models.py:315
-#: .\BestOperator\models.py:331
+#: .\BestOperator\models.py:157 .\BestOperator\models.py:320
+#: .\BestOperator\models.py:336
 msgid "Feature"
 msgstr "Характеристика"
 
-#: .\BestOperator\models.py:157 .\BestOperator\models.py:331
+#: .\BestOperator\models.py:157 .\BestOperator\models.py:336
 msgid "Reference to Feature"
 msgstr "Посилання на характеристику"
 
@@ -387,7 +387,7 @@ msgid "Criterion to evaluate, if set to 'true' -> use current term"
 msgstr ""
 
 #: .\BestOperator\models.py:183 .\BestOperator\models.py:256
-#: .\BestOperator\models.py:282 .\BestOperator\models.py:319
+#: .\BestOperator\models.py:287 .\BestOperator\models.py:324
 msgid "Service Type"
 msgstr ""
 
@@ -404,7 +404,7 @@ msgid "Terms Of Usage"
 msgstr ""
 
 #: .\BestOperator\models.py:194 .\BestOperator\models.py:201
-#: .\BestOperator\models.py:321
+#: .\BestOperator\models.py:326
 msgid "Unit"
 msgstr "Одиниця"
 
@@ -503,107 +503,117 @@ msgstr ""
 msgid "To Operator"
 msgstr ""
 
-#: .\BestOperator\models.py:265
+#: .\BestOperator\models.py:264
 msgid "Destination operator, who will receive call or message"
 msgstr ""
 
-#: .\BestOperator\models.py:278 .\BestOperator\models.py:284
+#: .\BestOperator\models.py:265
+#, fuzzy
+#| msgid "Operators"
+msgid "To Operators (String)"
+msgstr "Оператори"
+
+#: .\BestOperator\models.py:265
+msgid "Concatenation of operators selected in 'to_operator' field"
+msgstr ""
+
+#: .\BestOperator\models.py:283 .\BestOperator\models.py:289
 msgid "Direction"
 msgstr "Напрямок"
 
-#: .\BestOperator\models.py:279
+#: .\BestOperator\models.py:284
 msgid "Directions"
 msgstr "Напрямки"
 
-#: .\BestOperator\models.py:283
+#: .\BestOperator\models.py:288
 msgid "Service Type: call, SMS, internet etc."
 msgstr ""
 
-#: .\BestOperator\models.py:285
+#: .\BestOperator\models.py:290
 msgid "Direction of the call, SMS, internet etc."
 msgstr ""
 
-#: .\BestOperator\models.py:293 .\BestOperator\models.py:299
+#: .\BestOperator\models.py:298 .\BestOperator\models.py:304
 msgid "Service"
 msgstr "Сервіс"
 
-#: .\BestOperator\models.py:297
+#: .\BestOperator\models.py:302
 msgid "Related Offer"
 msgstr "Пов'язана пропозиція"
 
-#: .\BestOperator\models.py:298
+#: .\BestOperator\models.py:303
 msgid "Related Package"
 msgstr "Пов'язаний пакет"
 
-#: .\BestOperator\models.py:299
+#: .\BestOperator\models.py:304
 msgid "Provided service in scope of this feature"
 msgstr ""
 
-#: .\BestOperator\models.py:316
+#: .\BestOperator\models.py:321
 msgid "Features"
 msgstr "Характеристики"
 
-#: .\BestOperator\models.py:320
+#: .\BestOperator\models.py:325
 msgid "Service Type that can have such attribute"
 msgstr ""
 
-#: .\BestOperator\models.py:321
+#: .\BestOperator\models.py:326
 msgid "Measurement units linked with current attribute"
 msgstr ""
 
-#: .\BestOperator\models.py:325 .\BestOperator\models.py:329
+#: .\BestOperator\models.py:330 .\BestOperator\models.py:334
 msgid "Attribute"
 msgstr "Атрибут"
 
-#: .\BestOperator\models.py:326
+#: .\BestOperator\models.py:331
 msgid "Attributes"
 msgstr "Атрибути"
 
-#: .\BestOperator\models.py:329
+#: .\BestOperator\models.py:334
 msgid "Reference to Attribute"
 msgstr "Посилання на атрибут"
 
-#: .\BestOperator\models.py:330 .\BestOperator\models.py:346
+#: .\BestOperator\models.py:335 .\BestOperator\models.py:351
 msgid "Value"
 msgstr "Значення"
 
-#: .\BestOperator\models.py:330
+#: .\BestOperator\models.py:335
 msgid "Value of parameter"
 msgstr "Значення параметра"
 
-#: .\BestOperator\models.py:341
+#: .\BestOperator\models.py:346
 msgid "Parameter"
 msgstr "Параметр"
 
-#: .\BestOperator\models.py:342
+#: .\BestOperator\models.py:347
 msgid "Parameters"
 msgstr "Параметри"
 
-#: .\BestOperator\models.py:345
+#: .\BestOperator\models.py:350
 msgid "Key"
 msgstr "Ключ"
 
-#: .\BestOperator\models.py:345
+#: .\BestOperator\models.py:350
 msgid "Name of the key"
 msgstr "Ім'я ключа"
 
-#: .\BestOperator\models.py:346
+#: .\BestOperator\models.py:351
 msgid "Value of current key"
 msgstr "Значення ключа"
 
-#: .\BestOperator\models.py:347
+#: .\BestOperator\models.py:352
 msgid "Changed when"
 msgstr "Змінено"
 
-#: .\BestOperator\models.py:347
+#: .\BestOperator\models.py:352
 msgid "Date when current key was changed last time"
 msgstr "Коли цей ключ було змінено востаннє"
 
-#: .\BestOperator\models.py:352
+#: .\BestOperator\models.py:357
 msgid "Directory"
 msgstr "Каталог ключів"
 
-#: .\BestOperator\models.py:353
+#: .\BestOperator\models.py:358
 msgid "Directory Item"
 msgstr "Ключ"
 
