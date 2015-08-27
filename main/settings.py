@@ -12,12 +12,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'xjq3qjibjps4ct^d2mv#3^v-9o(ynptrp%x@^qf776chw1_@ad'
@@ -81,10 +78,6 @@ STATICFILES_FINDERS = ("django.contrib.staticfiles.finders.FileSystemFinder",
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -107,15 +100,20 @@ DATABASES = {
     # }
 }
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.8/topics/i18n/
-
+LANGUAGES = (
+    ('en', _('English')),
+    ('uk', _('Ukrainian')),
+    ('ru', _('Russian')),
+)
+LOCALE_PATHS = (
+    'locale',
+)
 SITE_ID = 1
-LANGUAGE_CODE = 'uk-ukr'
+LANGUAGE_CODE = 'uk'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = False
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
