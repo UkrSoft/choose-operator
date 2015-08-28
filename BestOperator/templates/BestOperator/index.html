@@ -6,7 +6,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	{% load i18n %}
     <meta name="Description" content="{% blocktrans %}Select best operator in Ukraine. Save on mobile right away. This is free. Operators: life:), MTC, Kyivstar{% endblocktrans %}"/>
-    <meta name="keywords" content="{% blocktrans %}Select operator, most-suitable package, opmimal package, profitable operator, MTC, MTS, Kyivstar, Life, Life:){% endblocktrans %}">
+    <meta name="keywords" content="{% blocktrans %}Select operator, most-suitable package, optimal package, profitable operator, MTC, MTS, Kyivstar, Life, Life:){% endblocktrans %}">
     <meta name="author" content="Данко Inc ©">
     <meta name="application-name" content="Best Operator Online - Boo">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
@@ -33,7 +33,7 @@
                 {% trans 'Preferred operators:' %}</label>
             <div id="from_operators_group">
                 {% for operator in operators %}
-                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="from_operators_{{ operator.id }}" name="from_operators" value="{{ operator.id }}">{% blocktrans %}{{ operator.name }}{% endblocktrans %}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="from_operators_{{ operator.id }}" name="from_operators" value="{{ operator.id }}">{{ operator.name }}</label>
                 {% endfor %}
             </div>
 		</div>
@@ -42,7 +42,7 @@
                 {% trans 'Preferred directions:' %}</label>
             <div id="to_operators_group">
                 {% for operator in operators %}
-                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="to_operators_{{ operator.id }}" name="to_operators" value="{{ operator.id }}">{% blocktrans %}{{ operator.name }}{% endblocktrans %}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="to_operators_{{ operator.id }}" name="to_operators" value="{{ operator.id }}">{{ operator.name }}</label>
                 {% endfor %}
             </div>
 		</div>
@@ -51,7 +51,7 @@
                 {% trans 'Interested in services:' %}</label>
             <div id="pref_services_group">
                 {% for st in serviceTypes %}
-                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="pref_services_{{ operator.id }}" name="pref_services" value="{{ st.id }}">{% blocktrans %}{{ st.name }}{% endblocktrans %}</label>
+                    <label class="checkbox-inline"><input type="checkbox" {% if forloop.first %}checked{% endif %} id="pref_services_{{ operator.id }}" name="pref_services" value="{{ st.id }}">{{ st.name }}</label>
                 {% endfor %}
             </div>
 		</div>
@@ -60,7 +60,7 @@
                 {% trans 'Max price (per month):' %}</label>
             <div id="money_limit_group">
                 <div class="input-group">
-                  <span class="input-group-addon">{% trans UAH %}</span>
+                  <span class="input-group-addon">{% trans 'UAH' %}</span>
                   <input type="text" class="form-control" aria-label="{% trans 'Price (rounded to whole UAH)' %}" value="0" id="money_limit" name="money_limit">
                   <span class="input-group-addon">.00</span>
                 </div>
